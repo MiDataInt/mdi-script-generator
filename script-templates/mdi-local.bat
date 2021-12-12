@@ -14,6 +14,8 @@ SET DEVELOPER=__DEVELOPER__
 
 REM get action from user
 ECHO.
+ECHO Welcome to the Michigan Data Interface.
+ECHO.
 ECHO What would you like to do?
 ECHO.
 ECHO   1 - run the MDI web interface

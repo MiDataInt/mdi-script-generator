@@ -24,6 +24,10 @@ getScriptValue <- function(runMode, optionName, option, input){
     } else if(option$type == "text"){ 
         if(value == "") {
             "NULL"
+
+# TODO: this could likely use a setting in the options file for whether or not to add flanking ''
+# e.g., USER and SERVER_URL don't need them...
+
         } else if(optionName == "R_DIRECTORY"){ # special handling of this value for Windows local scripts
             gsub('\\', '/', value, fixed = TRUE)
         } else {
