@@ -1,44 +1,50 @@
 ECHO OFF
 REM -----------------------------------------------------------------------
-REM launch the MDI web server and browser client in 'local' mode on Windows
-REM -----------------------------------------------------------------------
-REM path to your R installation
-REM you probably don't need to edit this manually, mdi::install() does it for you
-SET RSCRIPT="C:/PROGRA~1/R/R-40~1.3/bin/Rscript.exe"
+REM launch the MDI web server and browser client in local mode on Windows
 REM -----------------------------------------------------------------------
 
+REM set variables
+SET MDI_DIRECTORY=__MDI_DIRECTORY__
+SET HOST_DIRECTORY=__HOST_DIRECTORY__
+SET DATA_DIRECTORY=__DATA_DIRECTORY__
+SET R_DIRECTORY=__R_DIRECTORY__
+SET INSTALL_PACKAGES=__INSTALL_PACKAGES__
+SET SHINY_PORT=__SHINY_PORT__
+SET DEVELOPER=__DEVELOPER__
 
-REM do not edit anything below this line
-
-
+REM get action from user
 ECHO.
-ECHO Options:
+ECHO What would you like to do?
 ECHO.
-ECHO   1 - run the MDI web interface (end user mode)
-ECHO   2 - run the MDI web interface (developer mode)
-ECHO   3 - (re)install the MDI packages and repositories
-ECHO   4 - exit and do nothing
+ECHO   1 - run the MDI web interface
+ECHO   2 - (re)install the MDI on your computer
+ECHO   3 - exit and do nothing
 ECHO.
-SET /p OPTION_NUMBER=Select an option number:
+SET /p ACTION_NUMBER=Select an action by its number:
 
-IF "%OPTION_NUMBER%"=="1" (
+REM parse the requested action
+IF "%ACTION_NUMBER%"=="1" (
     SET COMMAND=run
-    SET OPTIONS=
+    SET OPTIONS=dataDir=%DATA_DIRECTORY%, port=%SHINY_PORT%, debug=%DEVELOPER%, developer=%DEVELOPER%
     SET MESSAGE=MDI shutdown complete
-) ELSE IF "%OPTION_NUMBER%"=="2" (
-    SET COMMAND=develop
-    SET OPTIONS=
-    SET MESSAGE=MDI shutdown complete
-) ELSE IF "%OPTION_NUMBER%"=="3" (
+) ELSE IF "%ACTION_NUMBER%"=="2" (
     SET COMMAND=install
-    SET OPTIONS=
+    SET OPTIONS=installPackages=%INSTALL_PACKAGES%, confirm=FALSE, addToPATH=FALSE
     SET MESSAGE=MDI installation complete
 ) ELSE (
     EXIT
 )
 
-%RSCRIPT% -e "mdi::%COMMAND%(getwd() %OPTIONS%)"
+REM parse and execute the requested R command
+IF "%R_DIRECTORY%"=="NULL" (
+    SET RSCRIPT=Rscript.exe
+) ELSE (
+    SET RSCRIPT=%R_DIRECTORY%/bin/Rscript.exe
+)
 
+"%RSCRIPT%" -e "mdi::%COMMAND%(%MDI_DIRECTORY%, hostDir=%HOST_DIRECTORY%, %OPTIONS%)"
+
+REM finish up
 ECHO.
 ECHO %MESSAGE%
 ECHO.

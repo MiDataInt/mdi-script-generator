@@ -7,76 +7,102 @@ library(shiny)
 library(shinydashboard)
 library(shinyjs)
 library(shinyBS)
+library(data.table)
 
-# source scripts
-source("options.R")
+# load script generator elements
+options <- fread("lib/options.csv")
+source("lib/options.R", local = TRUE)
+source("lib/download.R", local = TRUE)
 
+#----------------------------------------------------------------------
 # STYLES AND SCRIPTS, loaded into html <head>
+#----------------------------------------------------------------------
 htmlHeadElements <- tags$head(
     tags$link(rel = "icon", type = "image/png", href = "logo/favicon-16x16.png"), # favicon
     tags$link(href = "framework.css", rel = "stylesheet", type = "text/css"), # framework js and css
     tags$script(src = "framework.js", type = "text/javascript", charset = "utf-8")
 )
 
+#----------------------------------------------------------------------
 # TAB ITEMS UI
+#----------------------------------------------------------------------
 overviewTabUI <- tabItem(tabName = "overviewTab", tags$div(
     class = "text-block",
     includeMarkdown( file.path('static/mdi-intro.md') )
 ))
+#----------------------------------------------------------------------
 configureTabUI <- tabItem(tabName = "configureTab", tags$span(
     fluidRow(
+        class = "configureTab-fluidRow",
         column(
-            width = 4,
+            width = 5,
             tags$div(
-                style = "height: 750px; overflow: auto;",
-                lapply(names(scriptOptions), function(name){
-                    x <- scriptOptions[[name]]
-                    placeholder <- if(!is.null(x$placeholder)) x$placeholder
-                                else if(!is.null(placeholders[[x$type]])) placeholders[[x$type]]
-                                else ""
-                    tags$div(
-                        class = "option-input",
-                        style = "margin-top: 0.5em;",
-                        "data-help" = paste(name, 'help', sep = "-"),
-                        if(x$type == "select") selectInput(name, x$label, choices = x$choices, width = "100%")
-                        else if(x$type == "checkbox") checkboxGroupInput(name, x$label, choices = "", width = "100%")
-                        else textInput(name, x$label, value = x$default, placeholder = placeholder, width = "100%") # nolint                  
-                    )
-                })                     
+                class = "configureTab-scrolling",
+                style = "padding-right: 0.5em; overflow: auto;",
+                tags$h3("Options"),
+                tags$div(
+                    class = "option-input",
+                    "data-help" = paste('RUN_MODE', 'help', sep = "-"),
+                    selectInput('RUN_MODE', "MDI Run Mode", choices = runModes, width = "100%")  
+                ),
+                getAllOptionInputs()
             )
         ), 
         column(
-            width = 8,
+            width = 7,
             tags$div(
-                class = "option-help",
-                tags$h4("Instructions"),
-                tags$p("Click into any input to show option-specific help.")
-            ),
-            lapply(names(scriptOptions), function(name){
-                x <- scriptOptions[[name]]
-                mdFile <- file.path('static', 'options', paste0(name, '.md'))
+                class = "configureTab-scrolling",
+                style = "padding-right: 0.5em; overflow: auto;",
                 tags$div(
-                    id = paste(name, 'help', sep = "-"),
+                    id = paste('RUN_MODE', 'help', sep = "-"),
                     class = "option-help",
-                    style = "display: none;",
-                    if(file.exists(mdFile)) includeMarkdown(mdFile) else ""
-                )
-            })   
+                    includeMarkdown("static/options/RUN_MODE.md")
+                ),
+                lapply(options$option, function(optionName){
+                    mdFile <- file.path('static', 'options', paste0(optionName, '.md'))
+                    tags$div(
+                        id = paste(optionName, 'help', sep = "-"),
+                        class = "option-help",
+                        style = "display: none;",
+                        if(file.exists(mdFile)) includeMarkdown(mdFile) else ""
+                    )
+                })
+            )
         )
     )
 ))
-downloadTabUI <- tabItem(tabName = "downloadTab", tags$div(class = "text-block",
-    tags$div(
-
-    )
+#----------------------------------------------------------------------
+downloadTabUI <- tabItem(tabName = "downloadTab", tags$div(
+    class = "downloadTab-scrolling",
+    style = "margin-top: 1em; max-width: 800px; overflow: auto;",
+    includeMarkdown(file.path('static', paste0('download1', '.md'))),
+    radioButtons(
+        "operatingSystem",
+        label = "Local Operating System",
+        choices = operatingSystems,
+        inline = TRUE
+    ),
+    tags$hr(),
+    includeMarkdown(file.path('static', paste0('download2', '.md'))),
+    downloadButton(
+        'downloadScript', 
+        label = "Download Script", 
+        class = NULL, 
+        style = "margin-top: 1em; color: white; background-color: rgb(0,0,200); border-radius: 5px; display: none;" # nolint
+    ),
+    tags$hr(),
+    verbatimTextOutput('scriptContents')
 ))
+#----------------------------------------------------------------------
 shareTabUI <- tabItem(tabName = "shareTab", tags$div(class = "text-block",
     tags$div(
 
     )
 ))
 
+#----------------------------------------------------------------------
 # MAIN UI FUNCTION: this is the function called by Shiny RunApp
+#----------------------------------------------------------------------
 ui <- function(request){
     # cookie <- parseCookie(request$HTTP_COOKIE) # parseCookie is an MDI-encoded helper function
     # queryString <- parseQueryString(request$QUERY_STRING) # parseQueryString is an httr function

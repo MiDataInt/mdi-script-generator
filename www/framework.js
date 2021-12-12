@@ -1,20 +1,20 @@
 /*  client-side functions */
 
 $(document).ready(function() {
-    // let setCWHeight = function(){
-    //     $(".content-wrapper").height($(window).height() - 200);
-    // };
-    // setCWHeight();
-    // $(window).resize(setCWHeight);
+
+    // set heights for scrolling
+    let setCWHeight = function(){
+        let h = $(window).height() - 100;
+        $(".configureTab-scrolling").height(h);
+        $(".downloadTab-scrolling").height(h);
+    };
+    setCWHeight();
+    $(window).resize(setCWHeight);
+
+    // show input-specific help
     $(".option-input").on('click', function(){
-
-        console.log("XXXXXXXXX");
-
         $(".option-help").hide();
         let id = $(this).data('help');
         $("#" + id).show();
-
-        console.log(id)
-        // Shiny.setInputValue('resetPage', true, {priority: "event"}); 
     });
 });
