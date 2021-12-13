@@ -29,7 +29,7 @@ getScriptValue <- function(runMode, optionName, option, input){
 
         # coerce all file paths to unix-compatible    
         } else {
-            gsub('\\', '/', value, fixed = TRUE) 
+            value <- gsub('\\', '/', value, fixed = TRUE) 
 
             # coerce MDI_DIRECTORY so that it always ends in /mdi
             if(optionName == "MDI_DIRECTORY" && !endsWith(value, '/mdi')){
@@ -40,6 +40,7 @@ getScriptValue <- function(runMode, optionName, option, input){
             if(runMode == 'local' && 
                !is.na(option$quote_local) && 
                option$quote_local == TRUE) value <- paste0("'", value, "'")
+            value
         }
     } else { 
         value # numeric
