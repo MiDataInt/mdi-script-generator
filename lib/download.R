@@ -19,16 +19,27 @@ getScriptBasename <- function(runMode, operatingSystem){
 getScriptValue <- function(runMode, optionName, option, input){ 
     id <- paste(runMode, optionName, sep = "-")
     value <- input[[id]]
-    if(option$type == "checkbox"){ # strings are single-quoted, TRUE, FALSE, NULL and integer are bare strings
+    if(option$type == "checkbox"){
         if(!is.null(value) && value == "") "TRUE" else "FALSE"
     } else if(option$type == "text"){ 
-        if(value == "") {
-            "NULL"
+
+        # handle string nulls
+        if(value == "" || value == "NULL" || value == "NA") {
+            if(optionName == "R_LOAD_COMMAND") "echo" else "NULL"
+
+        # coerce all file paths to unix-compatible    
         } else {
+            gsub('\\', '/', value, fixed = TRUE) 
+
+            # coerce MDI_DIRECTORY so that it always ends in /mdi
+            if(optionName == "MDI_DIRECTORY" && !endsWith(value, '/mdi')){
+                value <- file.path(value, "mdi")
+            }
+
+            # apply single quotes to certain values for proper parsing of Windows bat files
             if(runMode == 'local' && 
                !is.na(option$quote_local) && 
                option$quote_local == TRUE) value <- paste0("'", value, "'")
-            gsub('\\', '/', value, fixed = TRUE) # coerce all file paths to unix-compatible
         }
     } else { 
         value # numeric

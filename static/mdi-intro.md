@@ -8,7 +8,7 @@ The
 provides access to various data analysis pipelines and apps.
 
 This site will help you generate scripts to download to your local
-computer to help you run the MDI in various usage modes. 
+computer to run the MDI in various usage modes. 
 
 Please work through the steps to the left and use the help
 information to guide you.
@@ -16,5 +16,7 @@ information to guide you.
 - **Configure** - set the options to store in your script  
 
 - **Download** - view the script contents and download to your computer  
+
+- **Usage** - additional instructions for using your script on Windows or Mac computers  
 
 - **Share** - get a link to help others create a script with similar options as your own (optional)  

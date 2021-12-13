@@ -1,4 +1,5 @@
 ECHO OFF
+SETLOCAL EnableDelayedExpansion
 REM -----------------------------------------------------------------------
 REM launch the Michigan Data Interface in local mode on Windows
 REM     web server  runs on a user's local desktop/laptop computer
@@ -32,20 +33,38 @@ ECHO   1 - run the MDI web interface
 ECHO   2 - (re)install the MDI on your computer
 ECHO   3 - exit and do nothing
 ECHO.
-SET /p ACTION_NUMBER=Select an action by its number:
+SET /p ACTION_NUMBER=Select an action by its number: 
 
 REM -----------------------------------------------------------------------
-REM parse the requested action
+REM parse and confirm the requested action
 REM -----------------------------------------------------------------------
 IF "%ACTION_NUMBER%"=="1" (
     SET COMMAND=run
     SET OPTIONS=dataDir=%DATA_DIRECTORY%, port=%SHINY_PORT%, debug=%DEVELOPER%, developer=%DEVELOPER%
     SET MESSAGE=MDI shutdown complete
 ) ELSE IF "%ACTION_NUMBER%"=="2" (
-    SET COMMAND=install
-    SET OPTIONS=installPackages=%INSTALL_PACKAGES%, confirm=TRUE, addToPATH=FALSE
-    SET MESSAGE=MDI installation complete
+    ECHO.
+    ECHO ------------------------------------------------------------------
+    ECHO PLEASE CONFIRM MDI INSTALLATION ACTIONS
+    ECHO ------------------------------------------------------------------
+    ECHO.
+    ECHO   - install the R MDI manager package
+    ECHO   - populate directory %MDI_DIRECTORY%
+    ECHO   - clone or update MDI repositories from GitHub
+    ECHO   - check out the most recent version of all definitive MDI repositories
+    ECHO   - install or update R packages
+    ECHO.
+    SET /p CONFIRMATION=Do you wish to continue? [type 'y' for 'yes']: 
+    IF "!CONFIRMATION!"=="y" (
+        SET COMMAND=install
+        SET OPTIONS=installPackages=%INSTALL_PACKAGES%, confirm=FALSE, addToPATH=FALSE
+        SET MESSAGE=MDI installation complete
+    ) ELSE (
+        ENDLOCAL
+        EXIT
+    )
 ) ELSE (
+    ENDLOCAL
     EXIT
 )
 
@@ -59,8 +78,15 @@ IF "%R_DIRECTORY%"=="NULL" (
 )
 
 REM -----------------------------------------------------------------------
-REM execute the requested MDI R command 
-REM this is the only action taken by this script on your computer
+REM for an installation action, be sure the MDI manager is installed and up to date
+REM -----------------------------------------------------------------------
+IF "%ACTION_NUMBER%"=="2" (
+    "%RSCRIPT%" -e "install.packages('remotes', repos = 'https://cloud.r-project.org')"  
+    "%RSCRIPT%" -e "remotes::install_github('MiDataInt/mdi-manager')"  
+)
+
+REM -----------------------------------------------------------------------
+REM execute the requested MDI command in R
 REM -----------------------------------------------------------------------
 "%RSCRIPT%" -e "mdi::%COMMAND%(%MDI_DIRECTORY%, hostDir=%HOST_DIRECTORY%, %OPTIONS%)"
 
@@ -72,3 +98,4 @@ ECHO %MESSAGE%
 ECHO.
 
 PAUSE
+ENDLOCAL

@@ -1,4 +1,5 @@
 ECHO OFF
+SETLOCAL EnableDelayedExpansion
 REM ----------------------------------------------------------------
 REM launch the MDI web server and browser client in 'remote' mode
 REM     web server  runs on a remote server on the login node
@@ -14,16 +15,16 @@ REM ----------------------------------------------------------------
 REM -----------------------------------------------------------------------
 REM set variable values
 REM -----------------------------------------------------------------------
-MDI_DIRECTORY=__MDI_DIRECTORY__
-HOST_DIRECTORY=__HOST_DIRECTORY__
-DATA_DIRECTORY=__DATA_DIRECTORY__
-R_LOAD_COMMAND=__R_LOAD_COMMAND__
-INSTALL_PACKAGES=__INSTALL_PACKAGES__
-ADD_TO_PATH=__ADD_TO_PATH__
-SERVER_URL=__SERVER_URL__
-USER=__USER__
-SHINY_PORT=__SHINY_PORT__
-DEVELOPER=__DEVELOPER__
+SET MDI_DIRECTORY=__MDI_DIRECTORY__
+SET HOST_DIRECTORY=__HOST_DIRECTORY__
+SET DATA_DIRECTORY=__DATA_DIRECTORY__
+SET R_LOAD_COMMAND=__R_LOAD_COMMAND__
+SET INSTALL_PACKAGES=__INSTALL_PACKAGES__
+SET ADD_TO_PATH=__ADD_TO_PATH__
+SET SERVER_URL=__SERVER_URL__
+SET USER=__USER__
+SET SHINY_PORT=__SHINY_PORT__
+SET DEVELOPER=__DEVELOPER__
 
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
@@ -37,7 +38,7 @@ ECHO   1 - run the MDI web interface (local browser, remote server via SSH)
 ECHO   2 - (re)install the MDI on the remote server via SSH
 ECHO   3 - exit and do nothing
 ECHO.
-SET /p ACTION_NUMBER=Select an action by its number:
+SET /p ACTION_NUMBER=Select an action by its number: 
 
 REM -----------------------------------------------------------------------
 REM act on a requested 'run' action
@@ -53,7 +54,7 @@ IF "%ACTION_NUMBER%"=="1" (
     REM await user input for how to close, including whether to leave the web server running after exit
     ssh -L %SHINY_PORT%:127.0.0.1:%SHINY_PORT% %USER%@%SERVER_URL% ^
     bash %MDI_DIRECTORY%/remote/mdi-remote-server.sh ^
-    %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% "%R_LOAD_COMMAND%" %DEVELOPER%
+    %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% "%R_LOAD_COMMAND%"
 
 REM -----------------------------------------------------------------------
 REM act on a requested 'install' action
@@ -61,11 +62,11 @@ REM -----------------------------------------------------------------------
 ) ELSE IF "%ACTION_NUMBER%"=="2" (
 
     REM prompt for installation permission
-    SET IP_MESSAGE=
+    SET IP_MESSAGE=-
     IF %INSTALL_PACKAGES%==TRUE (
         SET IP_MESSAGE=- install or update R packages
     )
-    SET PATH_MESSAGE=
+    SET PATH_MESSAGE=-
     IF %ADD_TO_PATH%==TRUE (
         SET PATH_MESSAGE=- modify '~/.bashrc' to add the mdi executable to PATH
     )
@@ -74,24 +75,27 @@ REM -----------------------------------------------------------------------
     ECHO PLEASE CONFIRM MDI INSTALLATION ACTIONS
     ECHO ------------------------------------------------------------------
     ECHO.
+    ECHO   - install the R MDI manager package
     ECHO   - populate %SERVER% directory %MDI_DIRECTORY%
     ECHO   - clone or update MDI repositories from GitHub
     ECHO   - check out the most recent version of all definitive MDI repositories
-    ECHO   %IP_MESSAGE%
-    ECHO   %PATH_MESSAGE%
+    ECHO   !IP_MESSAGE!
+    ECHO   !PATH_MESSAGE!
     ECHO.
-    SET /p CONFIRMATION=Do you wish to continue? (type 'y' for 'yes'):
+    SET /p CONFIRMATION=Do you wish to continue? [type 'y' for 'yes']: 
 
     REM ssh into server and execute the installation
-    IF "%CONFIRMATION%"=="y" (
+    IF "!CONFIRMATION!"=="y" (
         ssh %USER%@%SERVER_URL% ^
         %R_LOAD_COMMAND%; ^
         Rscript -e """install.packages('remotes', repos='https://cloud.r-project.org')"""; ^
-        Rscript -e """gC <- '~/gitCredentials.R'; if(file.exists(gC)) {source(gC); do.call(Sys.setenv, gitCredentials)}; remotes::install_github('MiDataInt/mdi-manager')"""; ^
-        Rscript -e """mdi::install('%MDI_DIRECTORY%', hostDir='%HOST_DIRECTORY%', installPackages=%INSTALL_PACKAGES%, confirm=FALSE, addToPATH=%ADD_TO_PATH%)"""; ^
+        Rscript -e """remotes::install_github('MiDataInt/mdi-manager')"""; ^
+        Rscript -e """mdi::install('%MDI_DIRECTORY%', hostDir = '%HOST_DIRECTORY%', installPackages = %INSTALL_PACKAGES%, confirm = FALSE, addToPATH = %ADD_TO_PATH%)"""; ^
         echo; ^
         echo "Done"
         REM 
         PAUSE
     )
 )
+
+ENDLOCAL
