@@ -1,17 +1,17 @@
-family,option,label,type,default,local,remote,node,public,quote_local
-MDI Directories,MDI_DIRECTORY,Installation Directory,text,~,required,required,required,NA,TRUE
-MDI Directories,HOST_DIRECTORY,Host Directory,text,NA,optional,optional,optional,NA,TRUE
-MDI Directories,DATA_DIRECTORY,Data Directory,text,NA,optional,optional,optional,NA,TRUE
-Installation Parameters,R_LOAD_COMMAND,R Load Command,text,NA,NA,optional,optional,NA,NA
-Installation Parameters,R_DIRECTORY,R Source Directory,text,NA,optional,NA,NA,NA,FALSE
-Installation Parameters,INSTALL_PACKAGES,Install R Packages,checkbox,TRUE,optional,optional,optional,NA,NA
-Installation Parameters,ADD_TO_PATH,Add to PATH,checkbox,FALSE,NA,optional,optional,NA,NA
-Server Information,SERVER_URL,Server URL,text,NA,NA,required,required,required,NA
-Server Information,USER,Server Username,text,NA,NA,required,required,NA,NA
-Ports,SHINY_PORT,R Shiny Port,integer,3838,required,required,required,NA,FALSE
-Ports,PROXY_PORT,Local Proxy Port,integer,1080,NA,NA,required,NA,NA
-Cluster Job Parameters,CLUSTER_ACCOUNT,Cluster Account,text,NA,NA,NA,optional,NA,NA
-Cluster Job Parameters,JOB_TIME_MINUTES,Job Time Minutes,integer,120,NA,NA,optional,NA,NA
-Cluster Job Parameters,CPUS_PER_TASK,CPUs per Task,integer,2,NA,NA,required,NA,NA
-Cluster Job Parameters,MEM_PER_CPU,Memory per CPU,text,4g,NA,NA,required,NA,NA
-Run Parameters,DEVELOPER,Developer Mode,checkbox,FALSE,optional,optional,optional,NA,NA
+family,option,label,type,advanced,default,local,remote,node,public,quote_local
+MDI Directories,MDI_DIRECTORY,Installation Directory,text,FALSE,~,required,required,required,NA,TRUE
+MDI Directories,HOST_DIRECTORY,Host Directory,text,FALSE,NA,optional,optional,optional,NA,TRUE
+MDI Directories,DATA_DIRECTORY,Data Directory,text,FALSE,NA,optional,optional,optional,NA,TRUE
+Installation Parameters,R_LOAD_COMMAND,R Load Command,text,FALSE,NA,NA,optional,optional,NA,NA
+Installation Parameters,R_DIRECTORY,R Source Directory,text,FALSE,NA,optional,NA,NA,NA,FALSE
+Installation Parameters,INSTALL_PACKAGES,Install R Packages,checkbox,TRUE,TRUE,optional,optional,optional,NA,NA
+Installation Parameters,ADD_TO_PATH,Add to PATH,checkbox,TRUE,FALSE,NA,optional,optional,NA,NA
+Server Information,SERVER_URL,Server URL,text,FALSE,NA,NA,required,required,required,NA
+Server Information,USER,Server Username,text,FALSE,NA,NA,required,required,NA,NA
+Ports,SHINY_PORT,R Shiny Port,integer,TRUE,3838,required,required,required,NA,FALSE
+Ports,PROXY_PORT,Local Proxy Port,integer,TRUE,1080,NA,NA,required,NA,NA
+Cluster Job Parameters,CLUSTER_ACCOUNT,Cluster Account,text,FALSE,NA,NA,NA,optional,NA,NA
+Cluster Job Parameters,JOB_TIME_MINUTES,Job Time Minutes,integer,FALSE,120,NA,NA,optional,NA,NA
+Cluster Job Parameters,CPUS_PER_TASK,CPUs per Task,integer,TRUE,2,NA,NA,required,NA,NA
+Cluster Job Parameters,MEM_PER_CPU,Memory per CPU,text,TRUE,4g,NA,NA,required,NA,NA
+Run Parameters,DEVELOPER,Developer Mode,checkbox,TRUE,FALSE,optional,optional,optional,NA,NA

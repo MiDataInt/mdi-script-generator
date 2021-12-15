@@ -17,6 +17,6 @@ information to guide you.
 
 - **Download** - view the script contents and download to your computer  
 
-- **Usage** - additional instructions for using your script on Windows or Mac computers  
+- **Usage** - additional instructions for using your script on Windows and Mac computers  
 
 - **Share** - get a link to help others create a script with similar options as your own (optional)  

@@ -14,12 +14,27 @@ options <- fread("lib/options.csv")
 source("lib/download.R", local = TRUE)
 
 # OPTIONS TAB SERVER ACTIONS
+showAdvancedOptions <- reactiveVal(FALSE)
 addOptionsServer <- function(input, output, session){
 
-    # automatically show option-relevant help when option is clicked
-    observeEvent(input$RUN_MODE, {
+    # disaply the appropriate set of options based on run mode
+    observe({
         hide(selector = ".runMode")
         show(selector = paste0("#", paste("runMode", input$RUN_MODE, sep = "-")))
+        toggle(selector = ".advanced", condition = showAdvancedOptions())
+    })
+
+    # toggle the display of advanced options
+    observeEvent(showAdvancedOptions(), {
+        showAdvancedOptions <- showAdvancedOptions()
+        toggle('showAdvancedOptionsWrapper', condition = !showAdvancedOptions)
+        toggle('hideAdvancedOptionsWrapper', condition =  showAdvancedOptions)
+    })
+    observeEvent(input$showAdvancedOptions, {
+        showAdvancedOptions(TRUE)
+    })
+    observeEvent(input$hideAdvancedOptions, {
+        showAdvancedOptions(FALSE)
     })
 }
 

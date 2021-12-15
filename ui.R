@@ -11,7 +11,7 @@ library(data.table)
 
 # load script generator elements
 options <- fread("lib/options.csv")
-source("lib/options.R", local = TRUE)
+source("lib/options.R",  local = TRUE)
 source("lib/download.R", local = TRUE)
 
 #----------------------------------------------------------------------
@@ -39,7 +39,19 @@ configureTabUI <- tabItem(tabName = "configureTab", tags$span(
             tags$div(
                 class = "configureTab-scrolling",
                 style = "padding-right: 0.5em; overflow: auto;",
-                tags$h3("Options"),
+                tags$h3(
+                    "Options", 
+                    tags$span(
+                        id = "showAdvancedOptionsWrapper",
+                        style = "font-size: 15px; margin-left: 0.75em;",
+                        actionLink('showAdvancedOptions', "Show Advanced Options")
+                    ),
+                    tags$span(
+                        id = "hideAdvancedOptionsWrapper",
+                        style = "font-size: 15px; margin-left: 0.75em;",
+                        actionLink('hideAdvancedOptions', "Hide Advanced Options")
+                    ),
+                ),
                 tags$div(
                     class = "option-input",
                     "data-help" = paste('RUN_MODE', 'help', sep = "-"),
@@ -64,7 +76,7 @@ configureTabUI <- tabItem(tabName = "configureTab", tags$span(
                         id = paste(optionName, 'help', sep = "-"),
                         class = "option-help",
                         style = "display: none;",
-                        if(file.exists(mdFile)) includeMarkdown(mdFile) else ""
+                        if(file.exists(mdFile)) includeMarkdown(mdFile) else "PENDING"
                     )
                 })
             )
@@ -87,16 +99,21 @@ downloadTabUI <- tabItem(tabName = "downloadTab", tags$div(
     downloadButton(
         'downloadScript', 
         label = "Download Script", 
-        class = NULL, 
         style = "margin-top: 1em; color: white; background-color: rgb(0,0,200); border-radius: 5px; display: none;" # nolint
     ),
     tags$hr(),
     verbatimTextOutput('scriptContents')
 ))
 #----------------------------------------------------------------------
+usageTabUI <- tabItem(tabName = "usageTab", tags$div(class = "text-block",
+    tags$div(
+        "PENDING"
+    )
+))
+#----------------------------------------------------------------------
 shareTabUI <- tabItem(tabName = "shareTab", tags$div(class = "text-block",
     tags$div(
-
+        "PENDING"
     )
 ))
 
@@ -104,8 +121,6 @@ shareTabUI <- tabItem(tabName = "shareTab", tags$div(class = "text-block",
 # MAIN UI FUNCTION: this is the function called by Shiny RunApp
 #----------------------------------------------------------------------
 ui <- function(request){
-    # cookie <- parseCookie(request$HTTP_COOKIE) # parseCookie is an MDI-encoded helper function
-    # queryString <- parseQueryString(request$QUERY_STRING) # parseQueryString is an httr function
     dashboardPage(
         dashboardHeader(
             title = "MDI",
@@ -118,7 +133,8 @@ ui <- function(request){
                 menuItem(tags$div('Script Generator',  class = "app-step"), tabName = "overviewTab"),
                 menuItem(tags$div('1 - Configure',     class = "app-step"), tabName = "configureTab"),
                 menuItem(tags$div('2 - Download',      class = "app-step"), tabName = "downloadTab"),
-                menuItem(tags$div('3 - Share',         class = "app-step"), tabName = "shareTab")
+                menuItem(tags$div('3 - Usage',         class = "app-step"), tabName = "usageTab"),
+                menuItem(tags$div('4 - Share',         class = "app-step"), tabName = "shareTab")
             ),
             htmlHeadElements, # yes, place the <head> content here (even though it seems odd)
             width = "175px" # must be here, not in CSS
@@ -131,6 +147,7 @@ ui <- function(request){
                 overviewTabUI,
                 configureTabUI,
                 downloadTabUI,
+                usageTabUI,
                 shareTabUI
             )
         )

@@ -4,10 +4,10 @@
 
 # the ways that the MDI can be run
 runModes <- list(
-    "--" = "",
-    "Local" = "local",
-    "Remote Server" = "remote",
-    "Cluster Node" = "node",
+    "--"                = "",
+    "Local"             = "local",
+    "Remote Server"     = "remote",
+    "Cluster Node"      = "node",
     "AWS Public Server" = "public"
 )
 
@@ -21,7 +21,7 @@ getOptionInput <- function(option, runMode){
         HTML(paste(option$label, tags$span("**", style = "color: rgb(200,0,0); font-size: 1.1em;")))
     } else option$label
     tags$div(
-        class = "option-input",
+        class = paste("option-input", if(option$advanced) "advanced" else ""),
         style = "margin-top: 0.5em;",
         "data-help" = paste(optionName, 'help', sep = "-"),
         if(option$type == "integer") numericInput(id, label, value = value, width = "100%")
