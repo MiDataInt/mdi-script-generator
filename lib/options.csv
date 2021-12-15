@@ -8,6 +8,7 @@ Installation Parameters,INSTALL_PACKAGES,Install R Packages,checkbox,TRUE,TRUE,o
 Installation Parameters,ADD_TO_PATH,Add to PATH,checkbox,TRUE,FALSE,NA,optional,optional,NA,NA
 Server Information,SERVER_URL,Server URL,text,FALSE,NA,NA,required,required,required,NA
 Server Information,USER,Server Username,text,FALSE,NA,NA,required,required,NA,NA
+Server Information,IDENTITY_FILE,Identity Key File,text,FALSE,NA,NA,optional,optional,optional,NA
 Ports,SHINY_PORT,R Shiny Port,integer,TRUE,3838,required,required,required,NA,FALSE
 Ports,PROXY_PORT,Local Proxy Port,integer,TRUE,1080,NA,NA,required,NA,NA
 Cluster Job Parameters,CLUSTER_ACCOUNT,Cluster Account,text,FALSE,NA,NA,NA,optional,NA,NA

@@ -15,6 +15,11 @@ REM -----------------------------------------------------------------------
 REM set variable values
 REM -----------------------------------------------------------------------
 SET SERVER_URL=__SERVER_URL__
+SET IDENTITY_FILE=__IDENTITY_FILE__
+SET IDENTITY_OPTION=
+IF NOT "%IDENTITY_FILE%" = "NULL" (
+    SET IDENTITY_OPTION=-i %IDENTITY_FILE%
+)
 
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
@@ -66,11 +71,11 @@ REM request the file to edit
         ENDLOCAL
         EXIT
     )
-    ssh ubuntu@%SERVER_URL% /srv/mdi/server edit !FILE_NAME!
+    ssh !IDENTITY_OPTION! ubuntu@%SERVER_URL% /srv/mdi/server edit !FILE_NAME!
 
 REM send all other actions directly to server via SSH
 ) ELSE (
-    ssh ubuntu@%SERVER_URL% /srv/mdi/server %ACTION_NAME%
+    ssh !IDENTITY_OPTION! ubuntu@%SERVER_URL% /srv/mdi/server %ACTION_NAME%
 )
 
 ENDLOCAL

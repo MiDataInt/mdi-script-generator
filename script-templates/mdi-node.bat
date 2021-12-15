@@ -25,6 +25,7 @@ SET INSTALL_PACKAGES=__INSTALL_PACKAGES__
 SET ADD_TO_PATH=__ADD_TO_PATH__
 SET SERVER_URL=__SERVER_URL__
 SET USER=__USER__
+SET IDENTITY_FILE=__IDENTITY_FILE__
 SET SHINY_PORT=__SHINY_PORT__
 SET PROXY_PORT=__PROXY_PORT__
 SET CLUSTER_ACCOUNT=__CLUSTER_ACCOUNT__
@@ -32,6 +33,10 @@ SET JOB_TIME_MINUTES=__JOB_TIME_MINUTES__
 SET CPUS_PER_TASK=__CPUS_PER_TASK__
 SET MEM_PER_CPU=__MEM_PER_CPU__
 SET DEVELOPER=__DEVELOPER__
+SET IDENTITY_OPTION=
+IF NOT "%IDENTITY_FILE%" = "NULL" (
+    SET IDENTITY_OPTION=-i %IDENTITY_FILE%
+)
 
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
@@ -56,7 +61,7 @@ IF "%ACTION_NUMBER%"=="1" (
     REM ssh into server, with dynamic port forwarding (SOCKS5)
     REM launch MDI web server job if one is not already running and report it's access URL
     REM await user input for how to close, including whether or not to leave the web server running after exit
-    START "%SERVER_URL%" ssh -D %PROXY_PORT% %USER%@%SERVER_URL% ^
+    START "%SERVER_URL%" ssh !IDENTITY_OPTION! -D %PROXY_PORT% %USER%@%SERVER_URL% ^
     bash %MDI_DIRECTORY%/remote/mdi-remote-node.sh ^
     %PROXY_PORT% "%R_LOAD_COMMAND%" %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% ^
     %CLUSTER_ACCOUNT% %JOB_TIME_MINUTES% %CPUS_PER_TASK% %MEM_PER_CPU% 
@@ -95,7 +100,7 @@ REM -----------------------------------------------------------------------
 
     REM ssh into server and execute the installation
     IF "!CONFIRMATION!"=="y" (
-        ssh %USER%@%SERVER_URL% ^
+        ssh !IDENTITY_OPTION! %USER%@%SERVER_URL% ^
         %R_LOAD_COMMAND%; ^
         Rscript -e """install.packages('remotes', repos = 'https://cloud.r-project.org')"""; ^
         Rscript -e """remotes::install_github('MiDataInt/mdi-manager')"""; ^
