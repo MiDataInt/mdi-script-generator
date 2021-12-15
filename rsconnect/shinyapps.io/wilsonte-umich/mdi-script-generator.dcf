@@ -1,0 +1,13 @@
+name: mdi-script-generator
+title: mdi-script-generator
+username:
+account: wilsonte-umich
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5333042
+bundleId: 5377208
+url: https://wilsonte-umich.shinyapps.io/mdi-script-generator/
+when: 1639597050.21119
+lastSyncTime: 1639597050.21119
+asMultiple: FALSE
+asStatic: FALSE

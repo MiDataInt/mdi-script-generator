@@ -2,7 +2,9 @@
 shinyapps.io script generation server for the Michigan Data Interface
 
 This repository carries the code that runs the MDI public script generator
-app hosted at url https://XXX.shinyapps.io.
+app hosted at:
+
+<https://wilsonte-umich.shinyapps.io/mdi-script-generator/>
 
 This repository is only intended for use by MDI project administrators.
 The code is shared publicly for transparency about how batch scripts

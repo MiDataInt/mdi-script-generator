@@ -8,6 +8,7 @@ library(shinydashboard)
 library(shinyjs)
 library(shinyBS)
 library(data.table)
+library(markdown)
 
 # load script generator elements
 options <- fread("lib/options.csv")
