@@ -22,7 +22,7 @@ REM -----------------------------------------------------------------------
 ECHO.
 ECHO Welcome to the Michigan Data Interface.
 ECHO.
-ECHO What would you like to do to public server %SERVER_URL%?
+ECHO What would you like to do to the server at %SERVER_URL%?
 ECHO.
 ECHO   Server execution commands (in order of usage):
 ECHO     build     run docker-compose build to create all needed Docker images
@@ -43,6 +43,30 @@ IF "%ACTION_NAME%"=="" (
 
 REM request the file to edit
 ) ELSE IF "%ACTION_NAME%"=="edit" (
+    ECHO.
+    ECHO Please select the server file you would like to edit.
+    ECHO.
+    ECHO   1 - server.sh             server configuration metadata
+    ECHO   2 - suites.yml            pipelines and apps suites to install
+    ECHO   3 - stage1-pipelines.yml  system defaults for pipeline execution
+    ECHO   4 - stage2-apps.yml       access control options for the apps server
+    ECHO   5 - exit and do nothing
+    ECHO.
+    SET /p FILE_NUMBER=Select a file to edit by its number: 
+    
+    IF "!FILE_NUMBER!"=="1" (
+        SET FILE_NAME=server.sh
+    ) ELSE IF "!FILE_NUMBER!"=="2" (
+        SET FILE_NAME=suites.yml
+    ) ELSE IF "!FILE_NUMBER!"=="3" (
+        SET FILE_NAME=stage1-pipelines.yml
+    ) ELSE IF "!FILE_NUMBER!"=="4" (
+        SET FILE_NAME=stage2-apps.yml
+    ) ELSE (
+        ENDLOCAL
+        EXIT
+    )
+    ssh ubuntu@%SERVER_URL% /srv/mdi/server edit !FILE_NAME!
 
 REM send all other actions directly to server via SSH
 ) ELSE (
