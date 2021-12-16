@@ -27,9 +27,15 @@ REM -----------------------------------------------------------------------
 ECHO.
 ECHO Welcome to the Michigan Data Interface.
 ECHO.
+ECHO   MDI_DIRECTORY    %MDI_DIRECTORY%
+ECHO   HOST_DIRECTORY   %HOST_DIRECTORY%
+ECHO   DATA_DIRECTORY   %DATA_DIRECTORY%
+ECHO   R_DIRECTORY      %R_DIRECTORY%
+ECHO   DEVELOPER        %DEVELOPER%
+ECHO.
 ECHO What would you like to do?
 ECHO.
-ECHO   1 - run the MDI web interface
+ECHO   1 - run the MDI web interface locally
 ECHO   2 - (re)install the MDI on your computer
 ECHO   3 - exit and do nothing
 ECHO.

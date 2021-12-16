@@ -33,10 +33,6 @@ SET JOB_TIME_MINUTES=__JOB_TIME_MINUTES__
 SET CPUS_PER_TASK=__CPUS_PER_TASK__
 SET MEM_PER_CPU=__MEM_PER_CPU__
 SET DEVELOPER=__DEVELOPER__
-SET IDENTITY_OPTION=
-IF NOT "%IDENTITY_FILE%" = "NULL" (
-    SET IDENTITY_OPTION=-i %IDENTITY_FILE%
-)
 
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
@@ -44,11 +40,23 @@ REM -----------------------------------------------------------------------
 ECHO.
 ECHO Welcome to the Michigan Data Interface.
 ECHO.
+ECHO   %USER%@%SERVER_URL%:%SHINY_PORT%
+ECHO   MDI_DIRECTORY    %MDI_DIRECTORY%
+ECHO   HOST_DIRECTORY   %HOST_DIRECTORY%
+ECHO   DATA_DIRECTORY   %DATA_DIRECTORY%
+ECHO   R_LOAD_COMMAND   %R_LOAD_COMMAND%
+ECHO   CLUSTER_ACCOUNT  %CLUSTER_ACCOUNT%
+ECHO   JOB_TIME_MINUTES %JOB_TIME_MINUTES%
+ECHO   CPUS_PER_TASK    %CPUS_PER_TASK%
+ECHO   MEM_PER_CPU      %MEM_PER_CPU%
+ECHO   DEVELOPER        %DEVELOPER%
+ECHO.
 ECHO What would you like to do?
 ECHO.
 ECHO   1 - run the MDI web interface (local browser, server on cluster node via SSH)
-ECHO   2 - (re)install the MDI on the remote server via SSH
-ECHO   3 - exit and do nothing
+ECHO   2 - use nano to edit one of the server configuration files
+ECHO   3 - (re)install the MDI on the remote server via SSH
+ECHO   4 - exit and do nothing
 ECHO.
 SET /p ACTION_NUMBER=Select an action by its number: 
 
@@ -61,19 +69,46 @@ IF "%ACTION_NUMBER%"=="1" (
     REM ssh into server, with dynamic port forwarding (SOCKS5)
     REM launch MDI web server job if one is not already running and report it's access URL
     REM await user input for how to close, including whether or not to leave the web server running after exit
-    START "%SERVER_URL%" ssh !IDENTITY_OPTION! -D %PROXY_PORT% %USER%@%SERVER_URL% ^
+    REM START "%SERVER_URL%" 
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" -D %PROXY_PORT% %USER%@%SERVER_URL% ^
     bash %MDI_DIRECTORY%/remote/mdi-remote-node.sh ^
     %PROXY_PORT% "%R_LOAD_COMMAND%" %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% ^
     %CLUSTER_ACCOUNT% %JOB_TIME_MINUTES% %CPUS_PER_TASK% %MEM_PER_CPU% 
 
     REM open a Chrome browser window that uses the SOCKS5 proxy port (without changing system settings)
-    CD "C:\Program Files (x86)\Google\Chrome\Application"
-    START "Chrome" chrome.exe 
+    REM CD "C:\Program Files\Google\Chrome\Application"
+    REM START "Chrome" chrome.exe 
+
+REM -----------------------------------------------------------------------
+REM request the server file to edit
+REM -----------------------------------------------------------------------
+) ELSE IF "%ACTION_NUMBER%"=="2" (
+    ECHO.
+    ECHO Please select the server file you would like to edit.
+    ECHO.
+    ECHO   1 - suites.yml            pipelines and apps suites to install
+    ECHO   2 - stage1-pipelines.yml  system defaults for pipeline execution
+    ECHO   3 - stage2-apps.yml       access control options for the apps server
+    ECHO   4 - exit and do nothing
+    ECHO.
+    SET /p FILE_NUMBER=Select a file to edit by its number: 
+    
+    IF "!FILE_NUMBER!"=="1" (
+        SET FILE_NAME=suites.yml
+    ) ELSE IF "!FILE_NUMBER!"=="2" (
+        SET FILE_NAME=stage1-pipelines.yml
+    ) ELSE IF "!FILE_NUMBER!"=="3" (
+        SET FILE_NAME=stage2-apps.yml
+    ) ELSE (
+        ENDLOCAL
+        EXIT
+    )
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% -t nano %MDI_DIRECTORY%/config/!FILE_NAME!
 
 REM -----------------------------------------------------------------------
 REM act on a requested 'install' action
 REM -----------------------------------------------------------------------
-) ELSE IF "%ACTION_NUMBER%"=="2" (
+) ELSE IF "%ACTION_NUMBER%"=="3" (
 
     REM prompt for installation permission
     SET IP_MESSAGE=-
@@ -100,7 +135,7 @@ REM -----------------------------------------------------------------------
 
     REM ssh into server and execute the installation
     IF "!CONFIRMATION!"=="y" (
-        ssh !IDENTITY_OPTION! %USER%@%SERVER_URL% ^
+        ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% ^
         %R_LOAD_COMMAND%; ^
         Rscript -e """install.packages('remotes', repos = 'https://cloud.r-project.org')"""; ^
         Rscript -e """remotes::install_github('MiDataInt/mdi-manager')"""; ^

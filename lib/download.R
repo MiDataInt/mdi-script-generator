@@ -16,7 +16,7 @@ getScriptBasename <- function(runMode, operatingSystem){
 }
 
 # parse inputs into values for scripts
-getScriptValue <- function(runMode, optionName, option, input){ 
+getScriptValue <- function(runMode, optionName, option, input, operatingSystem){ 
     id <- paste(runMode, optionName, sep = "-")
     value <- input[[id]]
     if(option$type == "checkbox"){
@@ -25,7 +25,9 @@ getScriptValue <- function(runMode, optionName, option, input){
 
         # handle string nulls
         if(value == "" || value == "NULL" || value == "NA") {
-            if(optionName == "R_LOAD_COMMAND") "echo" else "NULL"
+            if(optionName == "R_LOAD_COMMAND") "echo" 
+            else if(optionName == "IDENTITY_FILE") ""
+            else "NULL"
 
         # coerce all file paths to unix-compatible    
         } else {
@@ -34,6 +36,12 @@ getScriptValue <- function(runMode, optionName, option, input){
             # coerce MDI_DIRECTORY so that it always ends in /mdi
             if(optionName == "MDI_DIRECTORY" && !endsWith(value, '/mdi')){
                 value <- file.path(value, "mdi")
+            }
+
+            # coerce IDENTITY_FILE to a proper ssh argument
+            if(optionName == "IDENTITY_FILE"){
+                if(operatingSystem == "windows") value <- paste0('"', value, '"') # account for spaces in file path
+                value <- paste('-i', value)
             }
 
             # apply single quotes to certain values for proper parsing of Windows bat files
@@ -74,7 +82,7 @@ setScriptContents <- function(input){
         modeOptions <- options[!is.na(options[[runMode]])]
         for(optionName in modeOptions$option){
             option <- modeOptions[option == optionName]
-            value <- getScriptValue(runMode, optionName, option, input)
+            value <- getScriptValue(runMode, optionName, option, input, operatingSystem)
             if(!checkScriptValue(runMode, option, value)) return(NULL)
             template <- gsub(paste0("__", optionName, "__"), value, template)
         }

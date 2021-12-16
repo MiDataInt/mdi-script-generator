@@ -26,10 +26,6 @@ SET USER=__USER__
 SET IDENTITY_FILE=__IDENTITY_FILE__
 SET SHINY_PORT=__SHINY_PORT__
 SET DEVELOPER=__DEVELOPER__
-SET IDENTITY_OPTION=
-IF NOT "%IDENTITY_FILE%" = "NULL" (
-    SET IDENTITY_OPTION=-i %IDENTITY_FILE%
-)
 
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
@@ -37,11 +33,19 @@ REM -----------------------------------------------------------------------
 ECHO.
 ECHO Welcome to the Michigan Data Interface.
 ECHO.
+ECHO   %USER%@%SERVER_URL%:%SHINY_PORT%
+ECHO   MDI_DIRECTORY    %MDI_DIRECTORY%
+ECHO   HOST_DIRECTORY   %HOST_DIRECTORY%
+ECHO   DATA_DIRECTORY   %DATA_DIRECTORY%
+ECHO   R_LOAD_COMMAND   %R_LOAD_COMMAND%
+ECHO   DEVELOPER        %DEVELOPER%
+ECHO.
 ECHO What would you like to do?
 ECHO.
 ECHO   1 - run the MDI web interface (local browser, remote server via SSH)
-ECHO   2 - (re)install the MDI on the remote server via SSH
-ECHO   3 - exit and do nothing
+ECHO   2 - use nano to edit one of the server configuration files
+ECHO   3 - (re)install the MDI on the remote server via SSH
+ECHO   4 - exit and do nothing
 ECHO.
 SET /p ACTION_NUMBER=Select an action by its number: 
 
@@ -52,19 +56,45 @@ REM -----------------------------------------------------------------------
 IF "%ACTION_NUMBER%"=="1" (
 
     REM open a Chrome browser window at the appropriate url and port for the ssh tunnel to server
-    START "Chrome" "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" http://127.0.0.1:%SHINY_PORT%
+    REM START "Chrome" "C:\Program Files\Google\Chrome\Application\chrome.exe" http://127.0.0.1:%SHINY_PORT%
 
     REM ssh into server, with local port forwarding
     REM launch MDI web server if not already running and report it's access URL
     REM await user input for how to close, including whether to leave the web server running after exit
-    ssh !IDENTITY_OPTION! -L %SHINY_PORT%:127.0.0.1:%SHINY_PORT% %USER%@%SERVER_URL% ^
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" -L %SHINY_PORT%:127.0.0.1:%SHINY_PORT% %USER%@%SERVER_URL% ^
     bash %MDI_DIRECTORY%/remote/mdi-remote-server.sh ^
     %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% "%R_LOAD_COMMAND%"
 
 REM -----------------------------------------------------------------------
-REM act on a requested 'install' action
+REM request the server file to edit
 REM -----------------------------------------------------------------------
 ) ELSE IF "%ACTION_NUMBER%"=="2" (
+    ECHO.
+    ECHO Please select the server file you would like to edit.
+    ECHO.
+    ECHO   1 - suites.yml            pipelines and apps suites to install
+    ECHO   2 - stage1-pipelines.yml  system defaults for pipeline execution
+    ECHO   3 - stage2-apps.yml       access control options for the apps server
+    ECHO   4 - exit and do nothing
+    ECHO.
+    SET /p FILE_NUMBER=Select a file to edit by its number: 
+    
+    IF "!FILE_NUMBER!"=="1" (
+        SET FILE_NAME=suites.yml
+    ) ELSE IF "!FILE_NUMBER!"=="2" (
+        SET FILE_NAME=stage1-pipelines.yml
+    ) ELSE IF "!FILE_NUMBER!"=="3" (
+        SET FILE_NAME=stage2-apps.yml
+    ) ELSE (
+        ENDLOCAL
+        EXIT
+    )
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% -t nano %MDI_DIRECTORY%/config/!FILE_NAME!
+
+REM -----------------------------------------------------------------------
+REM act on a requested 'install' action
+REM -----------------------------------------------------------------------
+) ELSE IF "%ACTION_NUMBER%"=="3" (
 
     REM prompt for installation permission
     SET IP_MESSAGE=-
@@ -91,7 +121,7 @@ REM -----------------------------------------------------------------------
 
     REM ssh into server and execute the installation
     IF "!CONFIRMATION!"=="y" (
-        ssh !IDENTITY_OPTION! %USER%@%SERVER_URL% ^
+        ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% ^
         %R_LOAD_COMMAND%; ^
         Rscript -e """install.packages('remotes', repos='https://cloud.r-project.org')"""; ^
         Rscript -e """remotes::install_github('MiDataInt/mdi-manager')"""; ^

@@ -16,10 +16,6 @@ REM set variable values
 REM -----------------------------------------------------------------------
 SET SERVER_URL=__SERVER_URL__
 SET IDENTITY_FILE=__IDENTITY_FILE__
-SET IDENTITY_OPTION=
-IF NOT "%IDENTITY_FILE%" = "NULL" (
-    SET IDENTITY_OPTION=-i %IDENTITY_FILE%
-)
 
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
@@ -27,7 +23,9 @@ REM -----------------------------------------------------------------------
 ECHO.
 ECHO Welcome to the Michigan Data Interface.
 ECHO.
-ECHO What would you like to do to the server at %SERVER_URL%?
+ECHO   SERVER_URL   %SERVER_URL%
+ECHO.
+ECHO What would you like to do on the server?
 ECHO.
 ECHO   Server execution commands (in order of usage):
 ECHO     build     run docker-compose build to create all needed Docker images
@@ -39,6 +37,9 @@ ECHO   Additional resource management commands:
 ECHO     edit      use nano to edit one of the server configuration files
 ECHO     bash      bring up an interactive bash terminal in a new apps-server container
 ECHO.
+ECHO   Direct access to the server (not a container) command shell:
+ECHO     ssh       bring up an interactive bash terminal in the server itself
+ECHO.
 SET /p ACTION_NAME=Please type a command name (Enter to do nothing): 
 
 REM exit and do nothing
@@ -46,7 +47,7 @@ IF "%ACTION_NAME%"=="" (
     ENDLOCAL
     EXIT
 
-REM request the file to edit
+REM request the server file to edit
 ) ELSE IF "%ACTION_NAME%"=="edit" (
     ECHO.
     ECHO Please select the server file you would like to edit.
@@ -71,11 +72,19 @@ REM request the file to edit
         ENDLOCAL
         EXIT
     )
-    ssh !IDENTITY_OPTION! ubuntu@%SERVER_URL% /srv/mdi/server edit !FILE_NAME!
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL% -t /srv/mdi/server %ACTION_NAME% !FILE_NAME!
+
+REM use a pseudo-terminal for bash command also
+) ELSE IF "%ACTION_NAME%"=="bash" (
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL% -t /srv/mdi/server %ACTION_NAME%
+
+REM ssh into the server itself (not an apps-server container)
+) ELSE IF "%ACTION_NAME%"=="ssh" (
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL%
 
 REM send all other actions directly to server via SSH
 ) ELSE (
-    ssh !IDENTITY_OPTION! ubuntu@%SERVER_URL% /srv/mdi/server %ACTION_NAME%
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL% /srv/mdi/server %ACTION_NAME%
 )
 
 ENDLOCAL
