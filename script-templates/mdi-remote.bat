@@ -55,9 +55,6 @@ REM executes script 'mdi/remote/mdi-remote-server.sh' on the server computer
 REM -----------------------------------------------------------------------
 IF "%ACTION_NUMBER%"=="1" (
 
-    REM open a Chrome browser window at the appropriate url and port for the ssh tunnel to server
-    REM START "Chrome" "C:\Program Files\Google\Chrome\Application\chrome.exe" http://127.0.0.1:%SHINY_PORT%
-
     REM ssh into server, with local port forwarding
     REM launch MDI web server if not already running and report it's access URL
     REM await user input for how to close, including whether to leave the web server running after exit
