@@ -85,6 +85,13 @@ setScriptContents <- function(input){
             value <- getScriptValue(runMode, optionName, option, input, operatingSystem)
             if(!checkScriptValue(runMode, option, value)) return(NULL)
             template <- gsub(paste0("__", optionName, "__"), value, template)
+
+            # simplify passing of space-containing load commands to server
+            if(optionName == "R_LOAD_COMMAND"){
+                maskedName <- "R_LOAD_COMMAND_MASKED"
+                maskedValue <- gsub(' ', '~~', value)
+                template <- gsub(paste0("__", maskedName, "__"), maskedValue, template)
+            }
         }
 
         # if successful, save and preview the script contents
