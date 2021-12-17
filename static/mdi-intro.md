@@ -10,8 +10,8 @@ provides access to various data analysis pipelines and apps.
 This site will help you generate scripts to download to your local
 computer to run the MDI in various usage modes. 
 
-Please work through the following steps and use the help
-information to guide you.
+Please work through the following steps via the tabs at the left, 
+using the help information to guide you.
 
 - **Configure** - set the options to store in your script  
 

@@ -49,6 +49,10 @@ IF "%ACTION_NUMBER%"=="1" (
     SET OPTIONS=dataDir=%DATA_DIRECTORY%, port=%SHINY_PORT%, debug=%DEVELOPER%, developer=%DEVELOPER%
     SET MESSAGE=MDI shutdown complete
 ) ELSE IF "%ACTION_NUMBER%"=="2" (
+    SET IP_MESSAGE=-
+    IF %INSTALL_PACKAGES%==TRUE (
+        SET IP_MESSAGE=- install or update R packages
+    )
     ECHO.
     ECHO ------------------------------------------------------------------
     ECHO PLEASE CONFIRM MDI INSTALLATION ACTIONS
@@ -58,7 +62,7 @@ IF "%ACTION_NUMBER%"=="1" (
     ECHO   - populate directory %MDI_DIRECTORY%
     ECHO   - clone or update MDI repositories from GitHub
     ECHO   - check out the most recent version of all definitive MDI repositories
-    ECHO   - install or update R packages
+    ECHO   !IP_MESSAGE!
     ECHO.
     SET /p CONFIRMATION=Do you wish to continue? [type 'y' for 'yes']: 
     IF "!CONFIRMATION!"=="y" (
