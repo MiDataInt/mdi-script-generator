@@ -57,7 +57,8 @@ ECHO.
 ECHO   1 - run the MDI web interface (local browser, server on cluster node via SSH)
 ECHO   2 - use nano to edit one of the server configuration files
 ECHO   3 - (re)install the MDI on the remote server via SSH
-ECHO   4 - exit and do nothing
+ECHO   4 - bring up an interactive bash terminal on the server
+ECHO   5 - exit and do nothing
 ECHO.
 SET /p ACTION_NUMBER=Select an action by its number: 
 
@@ -141,6 +142,12 @@ REM -----------------------------------------------------------------------
         REM 
         PAUSE
     )
+
+REM -----------------------------------------------------------------------
+REM ssh into the server as per normal
+REM -----------------------------------------------------------------------
+) ELSE IF "%ACTION_NUMBER%"=="4" (
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL%
 )
 
 ENDLOCAL
