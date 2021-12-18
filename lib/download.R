@@ -34,7 +34,8 @@ getScriptValue <- function(runMode, optionName, option, input, operatingSystem){
             value <- gsub('\\', '/', value, fixed = TRUE) 
 
             # coerce MDI_DIRECTORY so that it always ends in /mdi
-            if(optionName == "MDI_DIRECTORY" && !endsWith(value, '/mdi')){
+            if((optionName == "MDI_DIRECTORY" ||
+                optionName == "HOST_DIRECTORY") && !endsWith(value, '/mdi')){
                 value <- file.path(value, "mdi")
             }
 
