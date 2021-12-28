@@ -31,6 +31,8 @@ SET DEVELOPER=__DEVELOPER__
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
 REM -----------------------------------------------------------------------
+:USER_PROMPT
+SET ACTION_NUMBER=
 ECHO.
 ECHO Welcome to the Michigan Data Interface.
 ECHO.
@@ -55,7 +57,7 @@ REM -----------------------------------------------------------------------
 REM act on a requested 'run' action
 REM executes script 'mdi/remote/mdi-remote-server.sh' on the server computer
 REM -----------------------------------------------------------------------
-IF "%ACTION_NUMBER%"=="1" (
+IF "!ACTION_NUMBER!"=="1" (
 
     REM ssh into server, with local port forwarding
     REM launch MDI web server if not already running and report it's access URL
@@ -67,7 +69,7 @@ IF "%ACTION_NUMBER%"=="1" (
 REM -----------------------------------------------------------------------
 REM request the server file to edit
 REM -----------------------------------------------------------------------
-) ELSE IF "%ACTION_NUMBER%"=="2" (
+) ELSE IF "!ACTION_NUMBER!"=="2" (
     ECHO.
     ECHO Please select the server file you would like to edit.
     ECHO.
@@ -93,7 +95,7 @@ REM -----------------------------------------------------------------------
 REM -----------------------------------------------------------------------
 REM act on a requested 'install' action
 REM -----------------------------------------------------------------------
-) ELSE IF "%ACTION_NUMBER%"=="3" (
+) ELSE IF "!ACTION_NUMBER!"=="3" (
 
     REM prompt for installation permission
     SET IP_MESSAGE=-
@@ -134,8 +136,18 @@ REM -----------------------------------------------------------------------
 REM -----------------------------------------------------------------------
 REM ssh into the server as per normal
 REM -----------------------------------------------------------------------
-) ELSE IF "%ACTION_NUMBER%"=="4" (
+) ELSE IF "!ACTION_NUMBER!"=="4" (
     ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL%
+) ELSE (
+    ENDLOCAL
+    EXIT
 )
 
-ENDLOCAL
+REM -----------------------------------------------------------------------
+REM reset the prompt menu for all actions except 'run'
+REM -----------------------------------------------------------------------
+IF "!ACTION_NUMBER!"=="1" (
+    ENDLOCAL    
+) ELSE (
+    GOTO USER_PROMPT
+)

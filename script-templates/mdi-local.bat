@@ -24,6 +24,8 @@ SET DEVELOPER=__DEVELOPER__
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
 REM -----------------------------------------------------------------------
+:USER_PROMPT
+SET ACTION_NUMBER=
 ECHO.
 ECHO Welcome to the Michigan Data Interface.
 ECHO.
@@ -44,11 +46,11 @@ SET /p ACTION_NUMBER=Select an action by its number:
 REM -----------------------------------------------------------------------
 REM parse and confirm the requested action
 REM -----------------------------------------------------------------------
-IF "%ACTION_NUMBER%"=="1" (
+IF "!ACTION_NUMBER!"=="1" (
     SET COMMAND=run
     SET OPTIONS=dataDir=%DATA_DIRECTORY%, port=%SHINY_PORT%, debug=%DEVELOPER%, developer=%DEVELOPER%
     SET MESSAGE=MDI shutdown complete
-) ELSE IF "%ACTION_NUMBER%"=="2" (
+) ELSE IF "!ACTION_NUMBER!"=="2" (
     SET IP_MESSAGE=-
     IF %INSTALL_PACKAGES%==TRUE (
         SET IP_MESSAGE=- install or update R packages
@@ -70,8 +72,7 @@ IF "%ACTION_NUMBER%"=="1" (
         SET OPTIONS=installPackages=%INSTALL_PACKAGES%, confirm=FALSE, addToPATH=FALSE
         SET MESSAGE=MDI installation complete
     ) ELSE (
-        ENDLOCAL
-        EXIT
+        GOTO USER_PROMPT
     )
 ) ELSE (
     ENDLOCAL
@@ -90,7 +91,7 @@ IF "%R_DIRECTORY%"=="NULL" (
 REM -----------------------------------------------------------------------
 REM for an installation action, be sure the MDI manager is installed and up to date
 REM -----------------------------------------------------------------------
-IF "%ACTION_NUMBER%"=="2" (
+IF "!ACTION_NUMBER!"=="2" (
     "%RSCRIPT%" -e "install.packages('remotes', repos = 'https://cloud.r-project.org')"  
     "%RSCRIPT%" -e "remotes::install_github('MiDataInt/mdi-manager')"  
 )
@@ -107,5 +108,12 @@ ECHO.
 ECHO %MESSAGE%
 ECHO.
 
-PAUSE
-ENDLOCAL
+REM -----------------------------------------------------------------------
+REM reset the prompt menu for all actions except 'run'
+REM -----------------------------------------------------------------------
+IF "!ACTION_NUMBER!"=="1" (
+    PAUSE
+    ENDLOCAL    
+) ELSE (
+    GOTO USER_PROMPT
+)

@@ -20,6 +20,8 @@ SET IDENTITY_FILE=__IDENTITY_FILE__
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
 REM -----------------------------------------------------------------------
+:USER_PROMPT
+SET ACTION_NAME=
 ECHO.
 ECHO Welcome to the Michigan Data Interface.
 ECHO.
@@ -28,27 +30,25 @@ ECHO.
 ECHO What would you like to do on the server?
 ECHO.
 ECHO   Server execution commands (in order of usage):
+ECHO     edit      use nano to edit one of the server configuration files
 ECHO     build     run docker-compose build to create all needed Docker images
-ECHO     install   update the server config, clone GitHub repos, install R packages
+ECHO     install   load the server config, clone GitHub repos, install R packages
 ECHO     up        launch all containers to run the MDI apps server
 ECHO     down      stop and remove any running containers to shut down the apps server
 ECHO.
-ECHO   Additional resource management commands:
-ECHO     edit      use nano to edit one of the server configuration files
-ECHO     bash      bring up an interactive bash terminal in a new apps-server container
+ECHO   Interactive command shells:
+ECHO     bash      bring up a bash terminal in a new apps-server container
+ECHO     ssh       bring up a bash terminal in the host server itself
 ECHO.
-ECHO   Direct access to the server (not a container) command shell:
-ECHO     ssh       bring up an interactive bash terminal in the server itself
-ECHO.
-SET /p ACTION_NAME=Please type a command name (Enter to do nothing): 
+SET /p ACTION_NAME=Please type a command name (Enter to do nothing and quit): 
 
 REM exit and do nothing
-IF "%ACTION_NAME%"=="" (
+IF "!ACTION_NAME!"=="" (
     ENDLOCAL
     EXIT
 
 REM request the server file to edit
-) ELSE IF "%ACTION_NAME%"=="edit" (
+) ELSE IF "!ACTION_NAME!"=="edit" (
     ECHO.
     ECHO Please select the server file you would like to edit.
     ECHO.
@@ -72,21 +72,22 @@ REM request the server file to edit
         ENDLOCAL
         EXIT
     )
-    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL% -t /srv/mdi/server %ACTION_NAME% !FILE_NAME!
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL% -t /srv/mdi/server !ACTION_NAME! !FILE_NAME!
 
 REM use a pseudo-terminal for bash command also
-) ELSE IF "%ACTION_NAME%"=="bash" (
-    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL% -t /srv/mdi/server %ACTION_NAME%
+) ELSE IF "!ACTION_NAME!"=="bash" (
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL% -t /srv/mdi/server !ACTION_NAME!
 
 REM ssh into the server itself (not an apps-server container)
-) ELSE IF "%ACTION_NAME%"=="ssh" (
+) ELSE IF "!ACTION_NAME!"=="ssh" (
     ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL%
 
 REM send all other actions directly to server via SSH
 ) ELSE (
-    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL% /srv/mdi/server %ACTION_NAME%
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" ubuntu@%SERVER_URL% /srv/mdi/server !ACTION_NAME!
 )
 
+GOTO USER_PROMPT
 ENDLOCAL
 
 PAUSE
