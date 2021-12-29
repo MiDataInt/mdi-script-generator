@@ -7,7 +7,7 @@ The
 <a href="https://midataint.github.io/" target="_mdi_docs">Michigan Data Interface</a> (MDI)
 provides access to various data analysis pipelines and apps.
 
-This site will help you generate scripts to download to your local
+This app will help you generate scripts that you can download to your local
 computer to run the MDI in various usage modes. 
 
 Please work through the following steps via the tabs at the left, 
