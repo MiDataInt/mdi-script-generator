@@ -14,6 +14,9 @@ library(markdown)
 options <- fread("lib/options.csv")
 source("lib/options.R",  local = TRUE)
 source("lib/download.R", local = TRUE)
+includeMarkdownFile <- function(folder, file){
+    includeMarkdown( file.path('static', folder, paste0(file, '.md') ) )
+}
 
 #----------------------------------------------------------------------
 # STYLES AND SCRIPTS, loaded into html <head>
@@ -21,6 +24,7 @@ source("lib/download.R", local = TRUE)
 htmlHeadElements <- tags$head(
     tags$link(rel = "icon", type = "image/png", href = "logo/favicon-16x16.png"), # favicon
     tags$link(href = "framework.css", rel = "stylesheet", type = "text/css"), # framework js and css
+    tags$link(href = "documentation.css", rel = "stylesheet", type = "text/css"), # documentation styles, mainly graphics # nolint
     tags$script(src = "framework.js", type = "text/javascript", charset = "utf-8")
 )
 
@@ -69,7 +73,7 @@ configureTabUI <- tabItem(tabName = "configureTab", tags$span(
                 tags$div(
                     id = paste('RUN_MODE', 'help', sep = "-"),
                     class = "option-help",
-                    includeMarkdown("static/options/RUN_MODE.md")
+                    includeMarkdownFile("options", "RUN_MODE")
                 ),
                 lapply(options$option, function(optionName){
                     mdFile <- file.path('static', 'options', paste0(optionName, '.md'))
@@ -88,7 +92,7 @@ configureTabUI <- tabItem(tabName = "configureTab", tags$span(
 downloadTabUI <- tabItem(tabName = "downloadTab", tags$div(
     class = "downloadTab-scrolling",
     style = "margin-top: 1em; max-width: 800px; overflow: auto;",
-    includeMarkdown(file.path('static', paste0('download1', '.md'))),
+    includeMarkdownFile("download", "os"),
     radioButtons(
         "operatingSystem",
         label = "Local Operating System",
@@ -96,7 +100,7 @@ downloadTabUI <- tabItem(tabName = "downloadTab", tags$div(
         inline = TRUE
     ),
     tags$hr(),
-    includeMarkdown(file.path('static', paste0('download2', '.md'))),
+    includeMarkdownFile("download", "link"),
     downloadButton(
         'downloadScript', 
         label = "Download Script", 
@@ -106,16 +110,22 @@ downloadTabUI <- tabItem(tabName = "downloadTab", tags$div(
     verbatimTextOutput('scriptContents')
 ))
 #----------------------------------------------------------------------
-usageTabUI <- tabItem(tabName = "usageTab", tags$div(class = "text-block",
-    tags$div(
-        "PENDING"
-    )
-))
-#----------------------------------------------------------------------
-shareTabUI <- tabItem(tabName = "shareTab", tags$div(class = "text-block",
-    tags$div(
-        "PENDING"
-    )
+usageTabUI <- tabItem(tabName = "usageTab", tags$div(class = "text-block usageTab-scrolling",
+    includeMarkdownFile("usage", "header"),
+    fluidRow(
+        tabBox(
+            width = 12,
+            tabPanel(
+                title = "Windows",
+                includeMarkdownFile("usage", "windows")
+            ),
+            tabPanel(
+                title = "Mac / Linux",
+                includeMarkdownFile("usage", "mac")
+            )
+        )        
+    ),
+    includeMarkdownFile("usage", "footer")
 ))
 
 #----------------------------------------------------------------------
@@ -134,8 +144,7 @@ ui <- function(request){
                 menuItem(tags$div('Script Generator',  class = "app-step"), tabName = "overviewTab"),
                 menuItem(tags$div('1 - Configure',     class = "app-step"), tabName = "configureTab"),
                 menuItem(tags$div('2 - Download',      class = "app-step"), tabName = "downloadTab"),
-                menuItem(tags$div('3 - Usage',         class = "app-step"), tabName = "usageTab"),
-                menuItem(tags$div('4 - Share',         class = "app-step"), tabName = "shareTab")
+                menuItem(tags$div('3 - Usage',         class = "app-step"), tabName = "usageTab")
             ),
             htmlHeadElements, # yes, place the <head> content here (even though it seems odd)
             width = "175px" # must be here, not in CSS
@@ -148,8 +157,7 @@ ui <- function(request){
                 overviewTabUI,
                 configureTabUI,
                 downloadTabUI,
-                usageTabUI,
-                shareTabUI
+                usageTabUI
             )
         )
     )   

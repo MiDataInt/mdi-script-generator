@@ -1,8 +1,10 @@
-### Server Url
+### Server Domain
 
 Please provide the complete domain name (but nothing else)
-for the remote or public server that will run this installation of the MDI.
+for the remote or public computer that will serve this installation of the MDI.
 
-#### Examples
+**Examples**
 - greatlakes.arc-ts.umich.edu
-- my.example.com
+- my-mdi.io
+
+Required.

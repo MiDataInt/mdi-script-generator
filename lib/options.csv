@@ -6,7 +6,7 @@ Installation Parameters,R_LOAD_COMMAND,R Load Command,text,FALSE,NA,NA,optional,
 Installation Parameters,R_DIRECTORY,R Source Directory,text,FALSE,NA,optional,NA,NA,NA,FALSE
 Installation Parameters,INSTALL_PACKAGES,Install R Packages,checkbox,TRUE,TRUE,optional,optional,optional,NA,NA
 Installation Parameters,ADD_TO_PATH,Add to PATH,checkbox,TRUE,FALSE,NA,optional,optional,NA,NA
-Server Information,SERVER_URL,Server URL,text,FALSE,NA,NA,required,required,required,NA
+Server Information,SERVER_URL,Server Domain,text,FALSE,NA,NA,required,required,required,NA
 Server Information,USER,Server Username,text,FALSE,NA,NA,required,required,NA,NA
 Server Information,IDENTITY_FILE,Identity Key File,text,FALSE,NA,NA,optional,optional,optional,NA
 Ports,SHINY_PORT,R Shiny Port,integer,TRUE,3838,required,required,required,NA,FALSE

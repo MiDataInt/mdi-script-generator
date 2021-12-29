@@ -18,7 +18,7 @@ source("lib/download.R", local = TRUE)
 showAdvancedOptions <- reactiveVal(FALSE)
 addOptionsServer <- function(input, output, session){
 
-    # disaply the appropriate set of options based on run mode
+    # display the appropriate set of options based on run mode
     observe({
         hide(selector = ".runMode")
         show(selector = paste0("#", paste("runMode", input$RUN_MODE, sep = "-")))

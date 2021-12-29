@@ -112,7 +112,7 @@ REM -----------------------------------------------------------------------
     ECHO ------------------------------------------------------------------
     ECHO.
     ECHO   - install the R MDI manager package
-    ECHO   - populate %SERVER% directory %MDI_DIRECTORY%
+    ECHO   - populate %SERVER_URL% directory %MDI_DIRECTORY%
     ECHO   - clone or update MDI repositories from GitHub
     ECHO   - check out the most recent version of all definitive MDI repositories
     ECHO   !IP_MESSAGE!

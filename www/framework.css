@@ -61,7 +61,6 @@ body, html {
     white-space: nowrap;
     font-size: 1.25em;
     padding: 0;
-    cursor: pointer;
 }
 .skin-blue .main-header .logo:hover {
     background-color: #00274C !important;

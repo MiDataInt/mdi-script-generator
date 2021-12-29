@@ -7,6 +7,7 @@ $(document).ready(function() {
         let h = $(window).height() - 100;
         $(".configureTab-scrolling").height(h);
         $(".downloadTab-scrolling").height(h);
+        $(".usageTab-scrolling").height(h);
     };
     setCWHeight();
     $(window).resize(setCWHeight);

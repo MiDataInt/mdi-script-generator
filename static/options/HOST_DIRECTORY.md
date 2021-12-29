@@ -1,22 +1,56 @@
 ### Host Directory
 
-When used with default options, all of the code and data used by the MDI resides under the MDI Directory, e.g., /path/to/mdi.
+With default options, all the code and data used by the MDI 
+resides under the Installation Directory, e.g., /path/to/mdi.
 
-However, sometimes developers pre-install a set of
-data analysis pipelines and/or apps suites to make it easy for 
-you to use their tools and data. You can access such a hosted
-installation by providing a value for **Host Directory**, which
-is simply the full path to a different, pre-existing MDI Directory.
+<div class="entityBox outerBox">
+    <p class='entityBoxLabel'>Default Configuration</p>
+    <div class="entityBox inlineBox">
+        <p class='entityBoxLabel'>Installation Directory</p>
+        <p>/config</p>
+        <p>/data</p>
+        <p>/environments</p>
+        <p>/frameworks</p>
+        <p>/library</p>
+        <p>/resources</p>
+        <p>/sessions</p>
+        <p>/suites</p>
+    </div>
+</div>
 
-When a Host Directory is provided, the Stage 1 pipelines **environments** and Stage 2 apps **library** code folders will be used from that directory instead of from the user's MDI Directory.
-Additionally, users will have access to the **resources**
-folder made available in the hosted directory.
+Alternatively, developers may pre-install 
+pipelines and/or apps suites to make them easy to use. 
+You can access such hosted installations by providing a value for **Host Directory**, 
+i.e., the full path to a different, pre-existing MDI Directory.
+Stage 1 pipeline **environments** and 
+Stage 2 app **library** code folders will be used from that directory 
+instead of from the Installation Directory.
+Additionally, you will have access to the hosted **config** and **resources**
+folders.
 
-Please consult with the tool provider for the proper path
-for your computer server.
+<div class="entityBox outerBox">
+    <p class='entityBoxLabel'>Hosted Installation</p>
+    <div class="entityBox inlineBox">
+        <p class='entityBoxLabel'>Installation Directory</p>
+        <p>/data</p>
+        <p>/frameworks</p>
+        <p>/sessions</p>
+        <p>/suites</p>
+    </div>
+    <div class="diagramArrow">&harr;</div>
+    <div class="entityBox inlineBox">
+        <p class='entityBoxLabel'>Host Directory</p>
+        <p>/config</p>
+        <p>/environments</p>
+        <p>/library</p>
+        <p>/resources</p>
+    </div>
+</div>
 
-If you are not using a hosted MDI installation, simply leave this option blank.
-
-#### Example
+**Example**
 - /path/to/hosted/mdi
 
+Please consult with your provider for the proper path
+to their installation on your server.
+
+If you are not using a hosted MDI installation, simply leave this option blank.

@@ -15,4 +15,3 @@ locally, or on another shinyapps.io instance. Instructions for
 logging in and deploying Shiny apps to shinyapps.io can be found here:
 
 <https://shiny.rstudio.com/articles/shinyapps.html>
-
