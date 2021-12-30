@@ -359,3 +359,12 @@ table.dataTable tbody tr.selected {
 .results-box-header-button:hover {
     color: white !important;
 }
+
+
+/*  ------------------------------------------------------------------------
+    script generator
+    ------------------------------------------------------------------------*/
+.overviewTab-scrolling .shiny-input-container {
+    margin-top: 0.75em;
+    margin-bottom: 0.25em;
+}

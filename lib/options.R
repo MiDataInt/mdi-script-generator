@@ -2,10 +2,51 @@
 # script option definitions and processing functions
 #----------------------------------------------------------------------
 
+#----------------------------------------------------------------------
+# quick start options, from the Overview tab
+#----------------------------------------------------------------------
+quickStart <- list(
+    "Local Computer"    = "local",
+    "UM Great Lakes"    = "greatlakes",
+    "AWS Public Server" = "public"
+)
+quickStartOptions <- function(mode){
+    if(mode == "local"){ tagList(
+        textInput("quickStartRDirectory", "R Source Directory", 
+                    placeholder = "required unless Rscript is in PATH", width = "100%")
+    )} else if(mode == "greatlakes"){tagList(
+        textInput("quickStartRVersion", "R Version", value = "4.1.0",
+                    placeholder = "e.g., 4.1.0, required", width = "100%"),
+        textInput("quickStartUsername", "Username", 
+                    placeholder = "required", width = "100%"),
+        textInput("quickStartAccount", "Slurm Account", 
+                    placeholder = "e.g., johndoe99, required", width = "100%")
+    )} else if(mode == "public"){tagList(
+        textInput("quickStartDomain",  "Server Web Domain", 
+                    placeholder = "e.g., my-mdi.io, required", width = "100%"),
+        textInput("quickStartKeyFile", "SSH Key File Path",   
+                    placeholder = "required", width = "100%")
+    )}
+}
+checkQuickStartOptions <- function(input){
+    if(input$quickStartMode == "greatlakes"){
+        req(input$quickStartRVersion)
+        req(input$quickStartUsername)
+        req(input$quickStartAccount)
+    } else if(input$quickStartMode == "public"){
+        req(input$quickStartDomain)
+        req(input$quickStartKeyFile)
+    }
+}
+
+#----------------------------------------------------------------------
+# full options, from the Configure tab
+#----------------------------------------------------------------------
+
 # the ways that the MDI can be run
 runModes <- list(
     "--"                = "",
-    "Local"             = "local",
+    "Local Computer"    = "local",
     "Remote Server"     = "remote",
     "Cluster Node"      = "node",
     "AWS Public Server" = "public"

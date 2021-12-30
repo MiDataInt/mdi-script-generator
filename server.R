@@ -12,7 +12,45 @@ library(markdown)
 
 # load script generator elements
 options <- fread("lib/options.csv")
+source("lib/options.R", local = TRUE)
 source("lib/download.R", local = TRUE)
+
+# OVERVIEW TAB SERVER ACTIONS
+addQuickStartServer <- function(input, output, session){
+    
+    # quick start options
+    output$quickStartOptions <- renderUI({ 
+        fluidRow(
+            column(
+                width = 10,
+                quickStartOptions(input$quickStartMode)
+            )
+        )
+    })
+
+    # quick start download button
+    output$quickStartDownload <- renderUI({ 
+        checkQuickStartOptions(input)
+        fluidRow(
+            column(
+                width = 3,
+                scriptDownloadButton('quickStartDownloadButton', "block")
+            )
+        )
+    })
+
+    # quick start script download handler
+    output$quickStartDownloadButton <- downloadHandler(
+        filename = function() {
+            getScriptBasename(input$quickStartMode, input$quickStartOperatingSystem)
+        },
+        content = function(tempFile) {
+            x <- getScriptContents(input, input$quickStartMode, input$quickStartOperatingSystem, 
+                                   getFn, function(...) TRUE)
+            cat(x, file = tempFile)
+        }
+    )
+}
 
 # OPTIONS TAB SERVER ACTIONS
 showAdvancedOptions <- reactiveVal(FALSE)
@@ -66,6 +104,7 @@ addDownloadServer <- function(input, output, session){
 
 # MAIN SERVER FUNCTION: this is the function called by Shiny RunApp
 server <- function(input, output, session){
+    addQuickStartServer(input, output, session)
     addOptionsServer(input, output, session)
     addDownloadServer(input, output, session)
 }

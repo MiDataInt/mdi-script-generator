@@ -32,8 +32,13 @@ htmlHeadElements <- tags$head(
 # TAB ITEMS UI
 #----------------------------------------------------------------------
 overviewTabUI <- tabItem(tabName = "overviewTab", tags$div(
-    class = "text-block",
-    includeMarkdown( file.path('static/mdi-intro.md') )
+    class = "text-block overviewTab-scrolling",
+    style = "padding-bottom: 3em; overflow: auto;",
+    includeMarkdown( file.path('static/mdi-intro.md') ),
+    operatingSystemInput("quickStartOperatingSystem"),
+    radioButtons("quickStartMode", "MDI Run Mode", quickStart, inline = TRUE),
+    uiOutput("quickStartOptions"),
+    uiOutput("quickStartDownload")
 ))
 #----------------------------------------------------------------------
 configureTabUI <- tabItem(tabName = "configureTab", tags$span(
@@ -93,19 +98,10 @@ downloadTabUI <- tabItem(tabName = "downloadTab", tags$div(
     class = "downloadTab-scrolling",
     style = "margin-top: 1em; max-width: 800px; overflow: auto;",
     includeMarkdownFile("download", "os"),
-    radioButtons(
-        "operatingSystem",
-        label = "Local Operating System",
-        choices = operatingSystems,
-        inline = TRUE
-    ),
+    operatingSystemInput(),
     tags$hr(),
     includeMarkdownFile("download", "link"),
-    downloadButton(
-        'downloadScript', 
-        label = "Download Script", 
-        style = "margin-top: 1em; color: white; background-color: rgb(0,0,200); border-radius: 5px; display: none;" # nolint
-    ),
+    scriptDownloadButton('downloadScript'),
     tags$hr(),
     verbatimTextOutput('scriptContents')
 ))

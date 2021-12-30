@@ -5,7 +5,7 @@ in which computer runs the Stage 1 Pipelines, Stage 2 Apps server,
 and web browser. Critically, each mode yields the same tools and interfaces. 
 
 ---
-**Local Mode** will install the web server
+**Local Computer Mode** will install the web server
 on a user's desktop or laptop, so that the web browser and web
 server run on the same local computer.
 
