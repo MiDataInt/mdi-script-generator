@@ -73,33 +73,54 @@ getScriptValue <- function(runMode, optionName, option, input, operatingSystem){
     }
 } 
 getQuickStartValue <- function(runMode, optionName, option, input, operatingSystem){
-    nullOptions  <- c("HOST_DIRECTORY", "DATA_DIRECTORY")
-    falseOptions <- c("DEVELOPER")
-    if(optionName == "MDI_DIRECTORY"){
-        "~/mdi"
-    } else if (optionName %in% nullOptions){
-        "NULL"
-    } else if (optionName %in% falseOptions){
-        "FALSE"
-    }
 
+    # set handling for all quick start options
+    # three quick start types are local, node (i.e., greatlakes) and public (i.e., AWS)
+    qsOptions <- list( # options determined by the small number of quick start inputs
+        MDI_DIRECTORY = function(){
+            value <- "~/mdi"
+            if(runMode == "local") value <- paste0("'", value, "'")
+            value
+        },
+        R_DIRECTORY = function(){ # only applicable to local
+            value <- input$quickStartRDirectory
+            value <- gsub('\\', '/', value, fixed = TRUE) 
+            if(value == "") "NULL" else value # but is not required
+        },
+        R_LOAD_COMMAND = function(){ # only applicable to greatlakes/node
+            paste0("module load R/", input$quickStartRVersion)
+        },
+        USER = function(){ # only applicable to greatlakes/node
+            input$quickStartUsername
+        }, 
+        CLUSTER_ACCOUNT = function(){ # only applicable to greatlakes/node
+            input$quickStartAccount
+        },
+        SERVER_URL = function(){
+            if(runMode == "node") "greatlakes.arc-ts.umich.edu"
+            else if(runMode == "public") input$quickStartDomain
+            else NA # local mode has no server
+        },
+        IDENTITY_FILE = function(){
+            if(runMode == "public"){ # AWS servers must have a key file, greatlakes/local never do
+                value <- input$quickStartKeyFile
+                value <- gsub('\\', '/', value, fixed = TRUE) 
+                if(operatingSystem == "windows") value <- paste0('"', value, '"')
+                paste('-i', value)
+            } else ""
+        }
+    )
+    nullOptions  <- c("HOST_DIRECTORY", "DATA_DIRECTORY") # quick start installations are never hosted or shared
+    trueOptions  <- c("INSTALL_PACKAGES") # quick start is assumed to want to run the apps server
+    falseOptions <- c("ADD_TO_PATH", "DEVELOPER") # but never in developer mode, i.e., is for end users
+
+    # parse quick start options
+    if (optionName %in% names(qsOptions)) qsOptions[[optionName]]()
+    else if (optionName %in% nullOptions)  "NULL"
+    else if (optionName %in% trueOptions)  "TRUE"
+    else if (optionName %in% falseOptions) "FALSE"
+    else option$default # as found in options.csv
 }
-
-Installation Parameters,R_LOAD_COMMAND,R Load Command,text,FALSE,NA,NA,optional,optional,NA,NA
-Installation Parameters,R_DIRECTORY,R Source Directory,text,FALSE,NA,optional,NA,NA,NA,FALSE
-Installation Parameters,INSTALL_PACKAGES,Install R Packages,checkbox,TRUE,TRUE,optional,optional,optional,NA,NA
-Installation Parameters,ADD_TO_PATH,Add to PATH,checkbox,TRUE,FALSE,NA,optional,optional,NA,NA
-Server Information,SERVER_URL,Server Domain,text,FALSE,NA,NA,required,required,required,NA
-Server Information,USER,Server Username,text,FALSE,NA,NA,required,required,NA,NA
-Server Information,IDENTITY_FILE,Identity Key File,text,FALSE,NA,NA,optional,optional,optional,NA
-Ports,SHINY_PORT,R Shiny Port,integer,TRUE,3838,required,required,required,NA,FALSE
-Ports,PROXY_PORT,Local Proxy Port,integer,TRUE,1080,NA,NA,required,NA,NA
-Cluster Job Parameters,CLUSTER_ACCOUNT,Cluster Account,text,FALSE,NA,NA,NA,optional,NA,NA
-Cluster Job Parameters,JOB_TIME_MINUTES,Job Time Minutes,integer,FALSE,120,NA,NA,optional,NA,NA
-Cluster Job Parameters,CPUS_PER_TASK,CPUs per Task,integer,TRUE,2,NA,NA,required,NA,NA
-Cluster Job Parameters,MEM_PER_CPU,Memory per CPU,text,TRUE,4g,NA,NA,required,NA,NA
-Run Parameters,DEVELOPER,Developer Mode,checkbox,TRUE,FALSE,optional,optional,optional,NA,NA
-
 
 # required options cannot be NULL
 checkScriptValue <- function(runMode, option, value){ 
@@ -131,6 +152,7 @@ getScriptContents <- function(input, runMode, operatingSystem, getFn, checkFn){
             template <- gsub(paste0("__", maskedName, "__"), maskedValue, template)
         }
     }
+    template
 }
 setScriptContents <- function(input){
 

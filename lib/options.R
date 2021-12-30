@@ -7,21 +7,23 @@
 #----------------------------------------------------------------------
 quickStart <- list(
     "Local Computer"    = "local",
-    "UM Great Lakes"    = "greatlakes",
+    "UM Great Lakes"    = "node",
     "AWS Public Server" = "public"
 )
 quickStartOptions <- function(mode){
     if(mode == "local"){ tagList(
         textInput("quickStartRDirectory", "R Source Directory", 
-                    placeholder = "required unless Rscript is in PATH", width = "100%")
-    )} else if(mode == "greatlakes"){tagList(
+                    placeholder = "required unless Rscript executable is in PATH", width = "100%")
+
+    )} else if(mode == "node"){tagList( # i.e., greatlakes
         textInput("quickStartRVersion", "R Version", value = "4.1.0",
                     placeholder = "e.g., 4.1.0, required", width = "100%"),
         textInput("quickStartUsername", "Username", 
                     placeholder = "required", width = "100%"),
         textInput("quickStartAccount", "Slurm Account", 
                     placeholder = "e.g., johndoe99, required", width = "100%")
-    )} else if(mode == "public"){tagList(
+
+    )} else if(mode == "public"){tagList( # i.e., AWS
         textInput("quickStartDomain",  "Server Web Domain", 
                     placeholder = "e.g., my-mdi.io, required", width = "100%"),
         textInput("quickStartKeyFile", "SSH Key File Path",   
@@ -29,11 +31,12 @@ quickStartOptions <- function(mode){
     )}
 }
 checkQuickStartOptions <- function(input){
-    if(input$quickStartMode == "greatlakes"){
+    if(input$quickStartMode == "node"){ # i.e., greatlakes
         req(input$quickStartRVersion)
         req(input$quickStartUsername)
         req(input$quickStartAccount)
-    } else if(input$quickStartMode == "public"){
+
+    } else if(input$quickStartMode == "public"){ # i.e., AWS
         req(input$quickStartDomain)
         req(input$quickStartKeyFile)
     }

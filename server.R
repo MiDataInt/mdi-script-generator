@@ -46,7 +46,7 @@ addQuickStartServer <- function(input, output, session){
         },
         content = function(tempFile) {
             x <- getScriptContents(input, input$quickStartMode, input$quickStartOperatingSystem, 
-                                   getFn, function(...) TRUE)
+                                   getQuickStartValue, function(...) TRUE)
             cat(x, file = tempFile)
         }
     )
