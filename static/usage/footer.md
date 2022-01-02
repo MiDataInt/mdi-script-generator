@@ -33,14 +33,25 @@ It can be installed into Chrome here:
 
 <https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif>
 
-You will enter a link like the following into your browser;
-the exact address will be reported in the server log.
+Once installed, navigate to the SwitchyOmega options settings page.
+Click "New profile" and create a new profile with a helpful name
+such as "MDI Proxy Port 1080" or similar. Set up a proxy server
+with options:
+
+- Protocol = SOCKS5
+- Server = 127.0.0.1
+- Port = 1080 (or, whatever port you chose to use)
+
+Click "Apply changes" to save your new proxy configuration.
+
+You will then enter a link like the following into your browser;
+the exact address with the proper node name will be reported in the server log.
 
 <http://NODE:3838>
 
-Finally, set the SwitchyOmega browser extension to use the proxy
-for NODE.  
-**TODO: expand these SwitchyOmega instructions.**
+It will fail to load on first attempt. To make it work, set the SwitchyOmega 
+browser extension (find it in the upper right corner of Chrome) 
+to use the proxy you created above.
 
 ### Security concerns
 
