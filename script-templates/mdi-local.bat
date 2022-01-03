@@ -80,26 +80,33 @@ IF "!ACTION_NUMBER!"=="1" (
 )
 
 REM -----------------------------------------------------------------------
-REM parse the appropriate R command path
+REM parse the appropriate R command and library paths
+REM typical R_DIRECTORY on Windows is C:/Program Files/R/R-4.1.2
 REM -----------------------------------------------------------------------
 IF "%R_DIRECTORY%"=="NULL" (
     SET RSCRIPT=Rscript.exe
+    SET LIB_PATH=%HOMEDRIVE%%HOMEPATH%\mdi-R-library\unspecified
 ) ELSE (
     SET RSCRIPT=%R_DIRECTORY%/bin/Rscript.exe
+    FOR /F "tokens=2 delims=-" %%b in ("%R_DIRECTORY%") DO (
+       SET R_VERSION=%%b
+    )
+    SET LIB_PATH=%HOMEDRIVE%%HOMEPATH%\mdi-R-library\!R_VERSION!
 )
+MKDIR %LIB_PATH%
 
 REM -----------------------------------------------------------------------
 REM for an installation action, be sure the MDI manager is installed and up to date
 REM -----------------------------------------------------------------------
 IF "!ACTION_NUMBER!"=="2" (
-    "%RSCRIPT%" -e "install.packages('remotes', repos = 'https://cloud.r-project.org')"  
-    "%RSCRIPT%" -e "remotes::install_github('MiDataInt/mdi-manager')"  
+    "%RSCRIPT%" -e "install.packages('remotes', lib=Sys.getenv('LIB_PATH'), repos = 'https://cloud.r-project.org')" 
+    "%RSCRIPT%" -e ".libPaths(Sys.getenv('LIB_PATH')); remotes::install_github('MiDataInt/mdi-manager', lib=Sys.getenv('LIB_PATH'))"  
 )
 
 REM -----------------------------------------------------------------------
 REM execute the requested MDI command in R
 REM -----------------------------------------------------------------------
-"%RSCRIPT%" -e "mdi::%COMMAND%(%MDI_DIRECTORY%, hostDir=%HOST_DIRECTORY%, %OPTIONS%)"
+"%RSCRIPT%" -e ".libPaths(Sys.getenv('LIB_PATH')); mdi::%COMMAND%(%MDI_DIRECTORY%, hostDir=%HOST_DIRECTORY%, %OPTIONS%)"
 
 REM -----------------------------------------------------------------------
 REM provide feedback to user once R command exits
