@@ -8,6 +8,7 @@ resides under the Installation Directory, e.g., /path/to/mdi.
     <div class="entityBox inlineBox">
         <p class='entityBoxLabel'>Installation Directory</p>
         <p>/config</p>
+        <p>/containers</p>
         <p>/data</p>
         <p>/environments</p>
         <p>/frameworks</p>
@@ -22,7 +23,7 @@ Alternatively, developers may pre-install
 pipelines and/or apps suites to make them easy to use. 
 You can access such hosted installations by providing a value for **Host Directory**, 
 i.e., the full path to a different, pre-existing MDI Directory.
-Stage 1 pipeline **environments** and 
+Stage 1 pipeline **containers**, **environments** and 
 Stage 2 app **library** code folders will be used from that directory 
 instead of from the Installation Directory.
 Additionally, you will have access to the hosted **config** and **resources**
@@ -41,6 +42,7 @@ folders.
     <div class="entityBox inlineBox">
         <p class='entityBoxLabel'>Host Directory</p>
         <p>/config</p>
+        <p>/containers</p>
         <p>/environments</p>
         <p>/library</p>
         <p>/resources</p>

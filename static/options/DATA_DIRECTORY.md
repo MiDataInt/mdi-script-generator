@@ -8,6 +8,7 @@ resides under the Installation Directory, e.g., /path/to/mdi.
     <div class="entityBox inlineBox">
         <p class='entityBoxLabel'>Installation Directory</p>
         <p>/config</p>
+        <p>/containers</p>
         <p>/data</p>
         <p>/environments</p>
         <p>/frameworks</p>
@@ -29,6 +30,7 @@ When a Data Directory is provided, it replaces the Stage 2 apps **data** folder.
     <div class="entityBox inlineBox">
         <p class='entityBoxLabel'>Installation Directory</p>
         <p>/config</p>
+        <p>/containers</p>
         <p>/environments</p>
         <p>/frameworks</p>
         <p>/library</p>
