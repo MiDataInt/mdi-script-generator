@@ -20,6 +20,7 @@ SET HOST_DIRECTORY=__HOST_DIRECTORY__
 SET DATA_DIRECTORY=__DATA_DIRECTORY__
 SET R_LOAD_COMMAND=__R_LOAD_COMMAND__
 SET R_LOAD_COMMAND_MASKED=__R_LOAD_COMMAND_MASKED__
+SET R_VERSION=__R_VERSION__
 SET INSTALL_PACKAGES=__INSTALL_PACKAGES__
 SET ADD_TO_PATH=__ADD_TO_PATH__
 SET SERVER_URL=__SERVER_URL__
@@ -41,42 +42,31 @@ ECHO   MDI_DIRECTORY    %MDI_DIRECTORY%
 ECHO   HOST_DIRECTORY   %HOST_DIRECTORY%
 ECHO   DATA_DIRECTORY   %DATA_DIRECTORY%
 ECHO   R_LOAD_COMMAND   %R_LOAD_COMMAND%
+ECHO   R_VERSION        %R_VERSION%
 ECHO   DEVELOPER        %DEVELOPER%
 ECHO.
 ECHO What would you like to do?
 ECHO.
-ECHO   1 - run the MDI web interface (local browser, remote server via SSH)
-ECHO   2 - use nano to edit one of the server configuration files
-ECHO   3 - (re)install the MDI on the remote server via SSH
+ECHO   1 - use nano to edit one of the server configuration files
+ECHO   2 - (re)install the MDI on the remote server via SSH
+ECHO   3 - run the MDI web interface (local browser, remote server via SSH)
 ECHO   4 - bring up an interactive bash terminal on the server
 ECHO   5 - exit and do nothing
 ECHO.
 SET /p ACTION_NUMBER=Select an action by its number: 
 
 REM -----------------------------------------------------------------------
-REM act on a requested 'run' action
-REM executes script 'mdi/remote/mdi-remote-server.sh' on the server computer
-REM -----------------------------------------------------------------------
-IF "!ACTION_NUMBER!"=="1" (
-
-    REM ssh into server, with local port forwarding
-    REM launch MDI web server if not already running and report it's access URL
-    REM await user input for how to close, including whether to leave the web server running after exit
-    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" -L %SHINY_PORT%:127.0.0.1:%SHINY_PORT% %USER%@%SERVER_URL% ^
-    bash %MDI_DIRECTORY%/remote/mdi-remote-server.sh ^
-    %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% %R_LOAD_COMMAND_MASKED%
-
-REM -----------------------------------------------------------------------
 REM request the server file to edit
 REM -----------------------------------------------------------------------
-) ELSE IF "!ACTION_NUMBER!"=="2" (
+IF "!ACTION_NUMBER!"=="1" (
     ECHO.
     ECHO Please select the server file you would like to edit.
     ECHO.
     ECHO   1 - suites.yml            pipelines and apps suites to install
     ECHO   2 - stage1-pipelines.yml  system defaults for pipeline execution
     ECHO   3 - stage2-apps.yml       access control options for the apps server
-    ECHO   4 - exit and do nothing
+    ECHO   4 - singularity.yml       optional command to load Singularity
+    ECHO   5 - exit and do nothing
     ECHO.
     SET /p FILE_NUMBER=Select a file to edit by its number: 
     
@@ -86,6 +76,8 @@ REM -----------------------------------------------------------------------
         SET FILE_NAME=stage1-pipelines.yml
     ) ELSE IF "!FILE_NUMBER!"=="3" (
         SET FILE_NAME=stage2-apps.yml
+    ) ELSE IF "!FILE_NUMBER!"=="4" (
+        SET FILE_NAME=singularity.yml
     ) ELSE (
         ENDLOCAL
         EXIT
@@ -95,7 +87,7 @@ REM -----------------------------------------------------------------------
 REM -----------------------------------------------------------------------
 REM act on a requested 'install' action
 REM -----------------------------------------------------------------------
-) ELSE IF "!ACTION_NUMBER!"=="3" (
+) ELSE IF "!ACTION_NUMBER!"=="2" (
 
     REM prompt for installation permission
     SET IP_MESSAGE=-
@@ -122,16 +114,41 @@ REM -----------------------------------------------------------------------
 
     REM ssh into server and execute the installation
     IF "!CONFIRMATION!"=="y" (
+        SET IP_FLAG=
+        IF %INSTALL_PACKAGES%==TRUE (
+            SET IP_FLAG=--install-packages
+        )
+        SET FORKS_FLAG=
+        IF %DEVELOPER%==TRUE (
+            SET FORKS_FLAG=--forks
+        )
+        SET SUPPRESS_MDI_BASHRC=
+        IF %ADD_TO_PATH%==FALSE (
+            SET SUPPRESS_MDI_BASHRC=TRUE
+        )
         ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% ^
         %R_LOAD_COMMAND%; ^
-        Rscript -e """install.packages('remotes', repos='https://cloud.r-project.org')"""; ^
-        Rscript -e """remotes::install_github('MiDataInt/mdi-manager')"""; ^
-        Rscript -e """mdi::install('%MDI_DIRECTORY%', hostDir = '%HOST_DIRECTORY%', installPackages = %INSTALL_PACKAGES%, confirm = FALSE, addToPATH = %ADD_TO_PATH%)"""; ^
+        export MDI_R_VERSION=%R_VERSION%; ^
+        export SUPPRESS_MDI_BASHRC=!SUPPRESS_MDI_BASHRC!; ^
+        %MDI_DIRECTORY%/mdi install !IP_FLAG! !FORKS_FLAG! ^
         echo; ^
         echo "Done"
         REM 
         PAUSE
     )
+
+REM -----------------------------------------------------------------------
+REM act on a requested 'run' action
+REM executes script 'mdi/remote/mdi-remote-server.sh' on the server computer
+REM -----------------------------------------------------------------------
+) ELSE IF "!ACTION_NUMBER!"=="3" (
+
+    REM ssh into server, with local port forwarding
+    REM launch MDI web server if not already running and report it's access URL
+    REM await user input for how to close, including whether to leave the web server running after exit
+    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" -L %SHINY_PORT%:127.0.0.1:%SHINY_PORT% %USER%@%SERVER_URL% ^
+    bash %MDI_DIRECTORY%/remote/mdi-remote-server.sh ^
+    %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% %R_LOAD_COMMAND_MASKED%
 
 REM -----------------------------------------------------------------------
 REM ssh into the server as per normal

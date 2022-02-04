@@ -6,4 +6,5 @@ to your web server job.
 Only 1 CPU is required to run the MDI web server, but you may wish 
 to request 2 CPUs if you will be performing a number of slower
 running asynchronous tasks. 
+
 Only rare users need to request more than 2 CPUs.

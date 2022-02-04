@@ -55,4 +55,4 @@ folders.
 Please consult with your provider for the proper path
 to their installation on your server.
 
-If you are not using a hosted MDI installation, simply leave this option blank.
+If you are not using a hosted MDI installation, leave this option blank.

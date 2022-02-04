@@ -20,6 +20,7 @@ HOST_DIRECTORY="__HOST_DIRECTORY__"
 DATA_DIRECTORY="__DATA_DIRECTORY__"
 R_LOAD_COMMAND="__R_LOAD_COMMAND__"
 R_LOAD_COMMAND_MASKED="__R_LOAD_COMMAND_MASKED__"
+R_VERSION="__R_VERSION__"
 INSTALL_PACKAGES="__INSTALL_PACKAGES__"
 ADD_TO_PATH="__ADD_TO_PATH__"
 SERVER_URL="__SERVER_URL__"
@@ -47,6 +48,7 @@ echo "  MDI_DIRECTORY    $MDI_DIRECTORY"
 echo "  HOST_DIRECTORY   $HOST_DIRECTORY"
 echo "  DATA_DIRECTORY   $DATA_DIRECTORY"
 echo "  R_LOAD_COMMAND   $R_LOAD_COMMAND"
+echo "  R_VERSION        $R_VERSION"
 echo "  CLUSTER_ACCOUNT  $CLUSTER_ACCOUNT"
 echo "  JOB_TIME_MINUTES $JOB_TIME_MINUTES"
 echo "  CPUS_PER_TASK    $CPUS_PER_TASK"
@@ -55,40 +57,28 @@ echo "  DEVELOPER        $DEVELOPER"
 echo
 echo "What would you like to do?"
 echo
-echo "  1 - run the MDI web interface (local browser, server on cluster node via SSH)"
-echo "  2 - use nano to edit one of the server configuration files"
-echo "  3 - (re)install the MDI on the remote server via SSH"
+echo "  1 - use nano to edit one of the server configuration files"
+echo "  2 - (re)install the MDI on the remote server via SSH"
+echo "  3 - run the MDI web interface (local browser, server on cluster node via SSH)"
 echo "  4 - bring up an interactive bash terminal on the server"
 echo "  5 - exit and do nothing"
 echo
 echo "Select an action by its number: "
 read ACTION_NUMBER
 
-# -----------------------------------------------------------------------
-# act on a requested 'run' action
-# executes script 'mdi/remote/mdi-remote-node.sh' on the server computer
-# -----------------------------------------------------------------------
-if [ "$ACTION_NUMBER" = "1" ]; then
-
-    # ssh into server, with dynamic port forwarding (SOCKS5)
-    # launch MDI web server job if one is not already running and report it's access URL
-    # await user input for how to close, including whether or not to leave the web server running after exit
-    ssh $IDENTITY_FILE -o "StrictHostKeyChecking no" -D $PROXY_PORT $USER@$SERVER_URL \
-    bash $MDI_DIRECTORY/remote/mdi-remote-node.sh \
-    $PROXY_PORT $R_LOAD_COMMAND_MASKED $SHINY_PORT $MDI_DIRECTORY $DATA_DIRECTORY $HOST_DIRECTORY $DEVELOPER \
-    $CLUSTER_ACCOUNT $JOB_TIME_MINUTES $CPUS_PER_TASK $MEM_PER_CPU 
 
 # -----------------------------------------------------------------------
 # request the server file to edit
 # -----------------------------------------------------------------------
-elif [ "$ACTION_NUMBER" = "2" ]; then
+if [ "$ACTION_NUMBER" = "1" ]; then
     echo
     echo "Please select the server file you would like to edit."
     echo
     echo "  1 - suites.yml            pipelines and apps suites to install"
     echo "  2 - stage1-pipelines.yml  system defaults for pipeline execution"
     echo "  3 - stage2-apps.yml       access control options for the apps server"
-    echo "  4 - exit and do nothing"
+    echo "  4 - singularity.yml       optional command to load Singularity"
+    echo "  5 - exit and do nothing"
     echo
     echo "Select a file to edit by its number: "
     read FILE_NUMBER
@@ -98,6 +88,8 @@ elif [ "$ACTION_NUMBER" = "2" ]; then
         FILE_NAME=stage1-pipelines.yml
     elif [ "$FILE_NUMBER" = "3" ]; then
         FILE_NAME=stage2-apps.yml
+    elif [ "$FILE_NUMBER" = "4" ]; then
+        FILE_NAME=singularity.yml
     else
         exit
     fi
@@ -106,7 +98,7 @@ elif [ "$ACTION_NUMBER" = "2" ]; then
 # -----------------------------------------------------------------------
 # act on a requested 'install' action
 # -----------------------------------------------------------------------
-elif [ "$ACTION_NUMBER" = "3" ]; then
+elif [ "$ACTION_NUMBER" = "2" ]; then
 
     # prompt for installation permission
     IP_MESSAGE="-"
@@ -134,14 +126,40 @@ elif [ "$ACTION_NUMBER" = "3" ]; then
 
     # ssh into server and execute the installation
     if [ "$CONFIRMATION" = "y" ]; then
+        IP_FLAG=""
+        if [ "$INSTALL_PACKAGES" = "TRUE" ]; then 
+            IP_FLAG=--install-packages
+        fi
+        FORKS_FLAG=""
+        if [ "$DEVELOPER" = "TRUE" ]; then 
+            FORKS_FLAG=--forks
+        fi
+        SUPPRESS_MDI_BASHRC=""
+        if [ "$ADD_TO_PATH" = "FALSE" ]; then 
+            SUPPRESS_MDI_BASHRC=TRUE
+        fi
         ssh $IDENTITY_FILE -o "StrictHostKeyChecking no" $USER@$SERVER_URL \
         $R_LOAD_COMMAND; \
-        Rscript -e """install.packages('remotes', repos='https://cloud.r-project.org')"""; \
-        Rscript -e """remotes::install_github('MiDataInt/mdi-manager')"""; \
-        Rscript -e """mdi::install('$MDI_DIRECTORY', hostDir = '$HOST_DIRECTORY', installPackages = $INSTALL_PACKAGES, confirm = FALSE, addToPATH = $ADD_TO_PATH)"""; \
+        export MDI_R_VERSION=$R_VERSION; \
+        export SUPPRESS_MDI_BASHRC=$SUPPRESS_MDI_BASHRC; \
+        $MDI_DIRECTORY/mdi install $IP_FLAG $FORKS_FLAG \
         echo; \
         echo "Done"
     fi
+
+# -----------------------------------------------------------------------
+# act on a requested 'run' action
+# executes script 'mdi/remote/mdi-remote-node.sh' on the server computer
+# -----------------------------------------------------------------------
+elif [ "$ACTION_NUMBER" = "3" ]; then
+
+    # ssh into server, with dynamic port forwarding (SOCKS5)
+    # launch MDI web server job if one is not already running and report it's access URL
+    # await user input for how to close, including whether or not to leave the web server running after exit
+    ssh $IDENTITY_FILE -o "StrictHostKeyChecking no" -D $PROXY_PORT $USER@$SERVER_URL \
+    bash $MDI_DIRECTORY/remote/mdi-remote-node.sh \
+    $PROXY_PORT $R_LOAD_COMMAND_MASKED $SHINY_PORT $MDI_DIRECTORY $DATA_DIRECTORY $HOST_DIRECTORY $DEVELOPER \
+    $CLUSTER_ACCOUNT $JOB_TIME_MINUTES $CPUS_PER_TASK $MEM_PER_CPU 
 
 # -----------------------------------------------------------------------
 # ssh into the server as per normal

@@ -2,7 +2,7 @@
 
 The MDI can be launched in various modes that differ 
 in which computer runs the Stage 1 Pipelines, Stage 2 Apps server, 
-and web browser. Critically, each mode yields the same tools and interfaces. 
+and web browser. Each mode yields the same tools and interfaces. 
 
 ---
 **Local Computer Mode** will install the web server
@@ -25,7 +25,7 @@ server run on the same local computer.
 
 Local mode is best when you wish to run Stage 2 Apps 
 on your computer to interact with data processed by pipelines on 
-some other server. It is responsive and secure, but you must manually transfer 
+a server. It is responsive and secure, but you must manually transfer 
 processed data files to your computer, or a provider needs to share
 such files with you, e.g., via email.
 
@@ -65,7 +65,7 @@ execute Stage 1 pipelines and analyze their output using Stage 2 apps
 running on the same server. It is best for users with an HPC solution that can
 be accessed via SSH willing to trade a slightly more complex
 installation for the capabilities afforded by running the MDI remotely.
-Remote modes may also offer improved compute speeds relative to smaller desktop
+Remote modes may also offer improved compute speeds relative to desktop
 or laptop computers.
 
 ---
@@ -121,8 +121,8 @@ server running on an Amazon Web Services (AWS) instance.
 Such an installation
 is facilitated by the following MDI repositories, which provide further documentation.
 
-<https://github.com/MiDataInt/mdi-web-server.git>  
-<https://github.com/MiDataInt/mdi-aws-ami.git>
+- <https://github.com/MiDataInt/mdi-web-server.git>  
+- <https://github.com/MiDataInt/mdi-aws-ami.git>
 
 <div class="entityBox outerBox">
     <p class='entityBoxLabel'>Public Server Configuration</p>
@@ -154,7 +154,7 @@ technical interest in installing the MDI themselves. Batch
 scripts are for administrators; end users simply
 point their web browser at your server. Indeed, anyone
 with a web browser can access your public servers, which therefore
-demand login authorization to protect their resources.
+demand login authorization to protect your resources.
 
 Similar to Local Mode, Public Server Mode mainly provides
 access to Stage 2 Apps with data packages uploaded or copied 

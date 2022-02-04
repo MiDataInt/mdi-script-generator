@@ -11,7 +11,5 @@ via the system <code>PATH</code> environment variable.
 
 - /path/to/R-4.1.0
 
-In addition to providing code access when Rscript is not set in PATH,
-the R Source Directory option lets you create different scripts with 
-different R paths, i.e., you can
-maintain multiple R versions on the same computer.
+The R Source Directory option option also lets you create different scripts with 
+different R paths to maintain multiple R versions on the same computer.

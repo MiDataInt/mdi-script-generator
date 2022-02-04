@@ -62,6 +62,11 @@ getScriptValue <- function(runMode, optionName, option, input, operatingSystem){
                 value <- paste('-i', value)
             }
 
+            # coerce Singularity container version to start with 'v'
+            if(optionName == "R_VERSION"){
+                if(!startsWith(value, 'v')) value <- paste0('v', value) 
+            }
+
             # apply single quotes to certain values for proper parsing of Windows bat files
             if(runMode == 'local' && 
                !is.na(option$quote_local) && 
@@ -87,8 +92,8 @@ getQuickStartValue <- function(runMode, optionName, option, input, operatingSyst
             value <- gsub('\\', '/', value, fixed = TRUE) 
             if(value == "") "NULL" else value # but is not required
         },
-        R_LOAD_COMMAND = function(){ # only applicable to greatlakes/node
-            paste0("module load R/", input$quickStartRVersion)
+        R_VERSION = function(){ # only applicable to greatlakes/node
+            input$quickStartRVersion
         },
         USER = function(){ # only applicable to greatlakes/node
             input$quickStartUsername

@@ -50,4 +50,4 @@ When a Data Directory is provided, it replaces the Stage 2 apps **data** folder.
 
 Please consult with your research team leader to determine what path to enter here.
 
-If you are not using a shared data folder, simply leave this option blank.
+If you are not using a shared data folder, leave this option blank.

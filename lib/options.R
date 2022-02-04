@@ -16,8 +16,8 @@ quickStartOptions <- function(mode){
                     placeholder = "required unless Rscript executable is in PATH", width = "100%")
 
     )} else if(mode == "node"){tagList( # i.e., greatlakes
-        textInput("quickStartRVersion", "R Version", value = "4.1.0",
-                    placeholder = "e.g., 4.1.0, required", width = "100%"),
+        textInput("quickStartRVersion", "R Version", value = "v4.1",
+                    placeholder = "e.g., v4.1, required", width = "100%"),
         textInput("quickStartUsername", "Username", 
                     placeholder = "required", width = "100%"),
         textInput("quickStartAccount", "Slurm Account", 

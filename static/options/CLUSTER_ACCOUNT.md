@@ -8,7 +8,7 @@ For the University of Michigan Great Lakes cluster, this account is typically
 based on the uniqname of the principal investigator. 
 
 **Example**
-- johndoe99
+- johndoe0
 
 Note: **Cluster Account** is distinct from your username on the server.
 Please consult your group leader for the proper value to use.
