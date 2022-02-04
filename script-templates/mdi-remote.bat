@@ -148,7 +148,7 @@ REM -----------------------------------------------------------------------
     REM await user input for how to close, including whether to leave the web server running after exit
     ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" -L %SHINY_PORT%:127.0.0.1:%SHINY_PORT% %USER%@%SERVER_URL% ^
     bash %MDI_DIRECTORY%/remote/mdi-remote-server.sh ^
-    %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% %R_LOAD_COMMAND_MASKED%
+    %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% %R_LOAD_COMMAND_MASKED% %R_VERSION%
 
 REM -----------------------------------------------------------------------
 REM ssh into the server as per normal
