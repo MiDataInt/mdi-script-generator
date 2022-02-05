@@ -70,7 +70,7 @@ elif [ "$ACTION_NUMBER" = "2" ]; then
     read CONFIRMATION
     if [ "$CONFIRMATION" = "y" ]; then
         COMMAND="install"
-        OPTIONS="installPackages=$INSTALL_PACKAGES, confirm=FALSE, addToPATH=FALSE"
+        OPTIONS="installPackages=$INSTALL_PACKAGES, confirm=FALSE"
         MESSAGE="MDI installation complete"
     else
         exit

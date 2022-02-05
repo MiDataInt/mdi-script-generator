@@ -24,7 +24,6 @@ SET R_LOAD_COMMAND=__R_LOAD_COMMAND__
 SET R_LOAD_COMMAND_MASKED=__R_LOAD_COMMAND_MASKED__
 SET R_VERSION=__R_VERSION__
 SET INSTALL_PACKAGES=__INSTALL_PACKAGES__
-SET ADD_TO_PATH=__ADD_TO_PATH__
 SET SERVER_URL=__SERVER_URL__
 SET USER=__USER__
 SET IDENTITY_FILE=__IDENTITY_FILE__
@@ -105,10 +104,6 @@ REM -----------------------------------------------------------------------
     IF %INSTALL_PACKAGES%==TRUE (
         SET IP_MESSAGE=- install or update R packages
     )
-    SET PATH_MESSAGE=-
-    IF %ADD_TO_PATH%==TRUE (
-        SET PATH_MESSAGE=- modify '~/.bashrc' to add the mdi executable to PATH
-    )
     ECHO.
     ECHO ------------------------------------------------------------------
     ECHO PLEASE CONFIRM MDI INSTALLATION ACTIONS
@@ -119,7 +114,6 @@ REM -----------------------------------------------------------------------
     ECHO   - clone or update MDI repositories from GitHub
     ECHO   - check out the most recent version of all definitive MDI repositories
     ECHO   !IP_MESSAGE!
-    ECHO   !PATH_MESSAGE!
     ECHO.
     SET /p CONFIRMATION=Do you wish to continue? [type 'y' for 'yes']: 
 
@@ -133,14 +127,10 @@ REM -----------------------------------------------------------------------
         IF %DEVELOPER%==TRUE (
             SET FORKS_FLAG=--forks
         )
-        SET SUPPRESS_MDI_BASHRC=
-        IF %ADD_TO_PATH%==FALSE (
-            SET SUPPRESS_MDI_BASHRC=TRUE
-        )
         ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% ^
         %R_LOAD_COMMAND%; ^
         export MDI_R_VERSION=%R_VERSION%; ^
-        export SUPPRESS_MDI_BASHRC=!SUPPRESS_MDI_BASHRC!; ^
+        export SUPPRESS_MDI_BASHRC=TRUE; ^
         %MDI_DIRECTORY%/mdi install !IP_FLAG! !FORKS_FLAG! ^
         echo; ^
         echo "Done"

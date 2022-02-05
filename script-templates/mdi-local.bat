@@ -69,7 +69,7 @@ IF "!ACTION_NUMBER!"=="1" (
     SET /p CONFIRMATION=Do you wish to continue? [type 'y' for 'yes']: 
     IF "!CONFIRMATION!"=="y" (
         SET COMMAND=install
-        SET OPTIONS=installPackages=%INSTALL_PACKAGES%, confirm=FALSE, addToPATH=FALSE
+        SET OPTIONS=installPackages=%INSTALL_PACKAGES%, confirm=FALSE
         SET MESSAGE=MDI installation complete
     ) ELSE (
         GOTO USER_PROMPT

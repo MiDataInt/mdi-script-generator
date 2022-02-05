@@ -20,7 +20,6 @@ R_LOAD_COMMAND="__R_LOAD_COMMAND__"
 R_LOAD_COMMAND_MASKED="__R_LOAD_COMMAND_MASKED__"
 R_VERSION="__R_VERSION__"
 INSTALL_PACKAGES="__INSTALL_PACKAGES__"
-ADD_TO_PATH="__ADD_TO_PATH__"
 SERVER_URL="__SERVER_URL__"
 USER="__USER__"
 IDENTITY_FILE="__IDENTITY_FILE__"
@@ -93,10 +92,6 @@ elif [ "$ACTION_NUMBER" = "2" ]; then
     if [ "$INSTALL_PACKAGES" = "TRUE" ]; then
         IP_MESSAGE="- install or update R packages"
     fi
-    PATH_MESSAGE="-"
-    if [ "$ADD_TO_PATH" = "TRUE" ]; then
-        PATH_MESSAGE="- modify '~/.bashrc' to add the mdi executable to PATH"
-    fi
     echo
     echo "------------------------------------------------------------------"
     echo "PLEASE CONFIRM MDI INSTALLATION ACTIONS"
@@ -107,7 +102,6 @@ elif [ "$ACTION_NUMBER" = "2" ]; then
     echo "  - clone or update MDI repositories from GitHub"
     echo "  - check out the most recent version of all definitive MDI repositories"
     echo "  $IP_MESSAGE"
-    echo "  $PATH_MESSAGE"
     echo
     echo "Do you wish to continue? [type 'y' for 'yes']: "
     read CONFIRMATION
@@ -122,14 +116,10 @@ elif [ "$ACTION_NUMBER" = "2" ]; then
         if [ "$DEVELOPER" = "TRUE" ]; then 
             FORKS_FLAG=--forks
         fi
-        SUPPRESS_MDI_BASHRC=""
-        if [ "$ADD_TO_PATH" = "FALSE" ]; then 
-            SUPPRESS_MDI_BASHRC=TRUE
-        fi
         ssh $IDENTITY_FILE -o "StrictHostKeyChecking no" $USER@$SERVER_URL \
         $R_LOAD_COMMAND; \
         export MDI_R_VERSION=$R_VERSION; \
-        export SUPPRESS_MDI_BASHRC=$SUPPRESS_MDI_BASHRC; \
+        export SUPPRESS_MDI_BASHRC=TRUE; \
         $MDI_DIRECTORY/mdi install $IP_FLAG $FORKS_FLAG \
         echo; \
         echo "Done"
