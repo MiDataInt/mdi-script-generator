@@ -94,13 +94,13 @@ IF "%R_DIRECTORY%"=="NULL" (
     SET LIB_PATH=%HOMEDRIVE%%HOMEPATH%\mdi-R-library\!R_VERSION!
 )
 MKDIR %LIB_PATH%
-SET R_LIB_PATH=.libPaths(Sys.getenv('LIB_PATH'))
+SET R_LIB_PATH=.libPaths(gsub('\\', '/', Sys.getenv('LIB_PATH'), fixed = TRUE))
 
 REM -----------------------------------------------------------------------
 REM for an installation action, be sure the MDI manager is installed and up to date
 REM -----------------------------------------------------------------------
-IF "!ACTION_NUMBER!"=="2" (
-    "%RSCRIPT%" -e "%R_LIB_PATH%; if (!require('remotes', character.only = TRUE)) install.packages('remotes', repos = 'https://cloud.r-project.org')" 
+IF "!ACTION_NUMBER!"=="1" (
+    "%RSCRIPT%" -e "%R_LIB_PATH%; if(require('remotes', character.only = TRUE) == FALSE) install.packages('remotes', repos = 'https://cloud.r-project.org')" 
     "%RSCRIPT%" -e "%R_LIB_PATH%; remotes::install_github('MiDataInt/mdi-manager')"  
 )
 
@@ -119,7 +119,7 @@ ECHO.
 REM -----------------------------------------------------------------------
 REM reset the prompt menu for all actions except 'run'
 REM -----------------------------------------------------------------------
-IF "!ACTION_NUMBER!"=="1" (
+IF "!ACTION_NUMBER!"=="2" (
     PAUSE
     ENDLOCAL    
 ) ELSE (

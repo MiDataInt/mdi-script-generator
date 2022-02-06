@@ -36,8 +36,8 @@ echo "  DEVELOPER        $DEVELOPER"
 echo
 echo "What would you like to do?"
 echo
-echo "  1 - run the MDI web interface locally"
-echo "  2 - (re)install the MDI on your computer"
+echo "  1 - (re)install the MDI on your computer"
+echo "  2 - run the MDI web interface locally"
 echo "  3 - exit and do nothing"
 echo
 echo "Select an action by its number: "
@@ -47,10 +47,6 @@ read ACTION_NUMBER
 # parse and confirm the requested action
 # -----------------------------------------------------------------------
 if [ "$ACTION_NUMBER" = "1" ]; then
-    COMMAND="run"
-    OPTIONS="dataDir=$DATA_DIRECTORY, port=$SHINY_PORT, debug=$DEVELOPER, developer=$DEVELOPER"
-    MESSAGE="MDI shutdown complete"
-elif [ "$ACTION_NUMBER" = "2" ]; then
     IP_MESSAGE="-"
     if [ "$INSTALL_PACKAGES" = "TRUE" ]; then
         IP_MESSAGE="- install or update R packages"
@@ -75,6 +71,10 @@ elif [ "$ACTION_NUMBER" = "2" ]; then
     else
         exit
     fi
+elif [ "$ACTION_NUMBER" = "2" ]; then
+    COMMAND="run"
+    OPTIONS="dataDir=$DATA_DIRECTORY, port=$SHINY_PORT, debug=$DEVELOPER, developer=$DEVELOPER"
+    MESSAGE="MDI shutdown complete"
 else
     exit
 fi
@@ -91,8 +91,8 @@ fi
 # -----------------------------------------------------------------------
 # for an installation action, be sure the MDI manager is installed and up to date
 # -----------------------------------------------------------------------
-if [ "$ACTION_NUMBER" = "2" ]; then
-    $RSCRIPT -e "install.packages('remotes', repos = 'https://cloud.r-project.org')"  
+if [ "$ACTION_NUMBER" = "1" ]; then
+    $RSCRIPT -e "if(!require('remotes', character.only = TRUE)) install.packages('remotes', repos = 'https://cloud.r-project.org')"  
     $RSCRIPT -e "remotes::install_github('MiDataInt/mdi-manager')"  
 fi
 
@@ -111,7 +111,7 @@ echo
 # -----------------------------------------------------------------------
 # reset the prompt menu for all actions except 'run'
 # -----------------------------------------------------------------------
-if [ "$ACTION_NUMBER" = "1" ]; then
+if [ "$ACTION_NUMBER" = "2" ]; then
     exit 
 fi
 # -----------------------------------------------------------------------
