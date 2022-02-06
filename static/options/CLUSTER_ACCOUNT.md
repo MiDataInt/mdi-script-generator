@@ -4,7 +4,7 @@ Please provide the name of the server account that will
 allow you to submit a job to the cluster via the Slurm 'sbatch' 
 command.
 
-For the University of Michigan Great Lakes cluster, this account is typically
+For the University of Michigan Great Lakes cluster, this account is
 based on the uniqname of the principal investigator. 
 
 **Example**
