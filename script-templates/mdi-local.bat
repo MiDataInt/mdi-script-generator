@@ -37,8 +37,8 @@ ECHO   DEVELOPER        %DEVELOPER%
 ECHO.
 ECHO What would you like to do?
 ECHO.
-ECHO   1 - run the MDI web interface locally
-ECHO   2 - (re)install the MDI on your computer
+ECHO   1 - (re)install the MDI on your computer
+ECHO   2 - run the MDI web interface locally
 ECHO   3 - exit and do nothing
 ECHO.
 SET /p ACTION_NUMBER=Select an action by its number: 
@@ -47,10 +47,6 @@ REM -----------------------------------------------------------------------
 REM parse and confirm the requested action
 REM -----------------------------------------------------------------------
 IF "!ACTION_NUMBER!"=="1" (
-    SET COMMAND=run
-    SET OPTIONS=dataDir=%DATA_DIRECTORY%, port=%SHINY_PORT%, debug=%DEVELOPER%, developer=%DEVELOPER%
-    SET MESSAGE=MDI shutdown complete
-) ELSE IF "!ACTION_NUMBER!"=="2" (
     SET IP_MESSAGE=-
     IF %INSTALL_PACKAGES%==TRUE (
         SET IP_MESSAGE=- install or update R packages
@@ -74,7 +70,11 @@ IF "!ACTION_NUMBER!"=="1" (
     ) ELSE (
         GOTO USER_PROMPT
     )
-) ELSE (
+) ELSE IF "!ACTION_NUMBER!"=="2" (
+    SET COMMAND=run
+    SET OPTIONS=dataDir=%DATA_DIRECTORY%, port=%SHINY_PORT%, debug=%DEVELOPER%, developer=%DEVELOPER%
+    SET MESSAGE=MDI shutdown complete
+)  ELSE (
     ENDLOCAL
     EXIT
 )
@@ -94,19 +94,20 @@ IF "%R_DIRECTORY%"=="NULL" (
     SET LIB_PATH=%HOMEDRIVE%%HOMEPATH%\mdi-R-library\!R_VERSION!
 )
 MKDIR %LIB_PATH%
+SET R_LIB_PATH=.libPaths(Sys.getenv('LIB_PATH'))
 
 REM -----------------------------------------------------------------------
 REM for an installation action, be sure the MDI manager is installed and up to date
 REM -----------------------------------------------------------------------
 IF "!ACTION_NUMBER!"=="2" (
-    "%RSCRIPT%" -e "install.packages('remotes', lib=Sys.getenv('LIB_PATH'), repos = 'https://cloud.r-project.org')" 
-    "%RSCRIPT%" -e ".libPaths(Sys.getenv('LIB_PATH')); remotes::install_github('MiDataInt/mdi-manager', lib=Sys.getenv('LIB_PATH'))"  
+    "%RSCRIPT%" -e "%R_LIB_PATH%; if (!require('remotes', character.only = TRUE)) install.packages('remotes', repos = 'https://cloud.r-project.org')" 
+    "%RSCRIPT%" -e "%R_LIB_PATH%; remotes::install_github('MiDataInt/mdi-manager')"  
 )
 
 REM -----------------------------------------------------------------------
 REM execute the requested MDI command in R
 REM -----------------------------------------------------------------------
-"%RSCRIPT%" -e ".libPaths(Sys.getenv('LIB_PATH')); mdi::%COMMAND%(%MDI_DIRECTORY%, hostDir=%HOST_DIRECTORY%, %OPTIONS%)"
+"%RSCRIPT%" -e "%R_LIB_PATH%; mdi::%COMMAND%(%MDI_DIRECTORY%, hostDir=%HOST_DIRECTORY%, %OPTIONS%)"
 
 REM -----------------------------------------------------------------------
 REM provide feedback to user once R command exits
