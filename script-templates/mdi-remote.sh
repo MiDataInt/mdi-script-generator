@@ -19,6 +19,7 @@ DATA_DIRECTORY="__DATA_DIRECTORY__"
 R_LOAD_COMMAND="__R_LOAD_COMMAND__"
 R_LOAD_COMMAND_MASKED="__R_LOAD_COMMAND_MASKED__"
 INSTALL_PACKAGES="__INSTALL_PACKAGES__"
+INSTALL_N_CPU=__INSTALL_N_CPU__
 SERVER_URL="__SERVER_URL__"
 USER="__USER__"
 IDENTITY_FILE="__IDENTITY_FILE__"
@@ -39,6 +40,7 @@ echo "  MDI_DIRECTORY    $MDI_DIRECTORY"
 echo "  HOST_DIRECTORY   $HOST_DIRECTORY"
 echo "  DATA_DIRECTORY   $DATA_DIRECTORY"
 echo "  R_LOAD_COMMAND   $R_LOAD_COMMAND"
+echo "  INSTALL_N_CPU    $INSTALL_N_CPU"
 echo "  DEVELOPER        $DEVELOPER"
 echo
 echo "What would you like to do?"
@@ -117,7 +119,7 @@ elif [ "$ACTION_NUMBER" = "2" ]; then
         ssh $IDENTITY_FILE -o "StrictHostKeyChecking no" $USER@$SERVER_URL \
         $R_LOAD_COMMAND; \
         export SUPPRESS_MDI_BASHRC=TRUE; \
-        $MDI_DIRECTORY/mdi install $IP_FLAG $FORKS_FLAG \
+        $MDI_DIRECTORY/mdi install $IP_FLAG $FORKS_FLAG --n-cpu $INSTALL_N_CPU \
         echo; \
         echo "Done"
     fi

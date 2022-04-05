@@ -16,8 +16,10 @@ HOST_DIRECTORY="__HOST_DIRECTORY__"
 DATA_DIRECTORY="__DATA_DIRECTORY__"
 R_DIRECTORY="__R_DIRECTORY__"
 INSTALL_PACKAGES="__INSTALL_PACKAGES__"
+INSTALL_N_CPU=__INSTALL_N_CPU__
 SHINY_PORT=__SHINY_PORT__
 DEVELOPER="__DEVELOPER__"
+export N_CPU=$INSTALL_N_CPU
 
 # -----------------------------------------------------------------------
 # prompt the user for the requested action
@@ -32,6 +34,7 @@ echo "  MDI_DIRECTORY    $MDI_DIRECTORY"
 echo "  HOST_DIRECTORY   $HOST_DIRECTORY"
 echo "  DATA_DIRECTORY   $DATA_DIRECTORY"
 echo "  R_DIRECTORY      $R_DIRECTORY"
+echo "  INSTALL_N_CPU    $INSTALL_N_CPU"
 echo "  DEVELOPER        $DEVELOPER"
 echo
 echo "What would you like to do?"
@@ -92,7 +95,7 @@ fi
 # for an installation action, be sure the MDI manager is installed and up to date
 # -----------------------------------------------------------------------
 if [ "$ACTION_NUMBER" = "1" ]; then
-    $RSCRIPT -e "if(!require('remotes', character.only = TRUE)) install.packages('remotes', repos = 'https://cloud.r-project.org')"  
+    $RSCRIPT -e "if(!require('remotes', character.only = TRUE)) install.packages('remotes', repos = 'https://cloud.r-project.org', Ncpus=$INSTALL_N_CPU)"  
     $RSCRIPT -e "remotes::install_github('MiDataInt/mdi-manager')"  
 fi
 

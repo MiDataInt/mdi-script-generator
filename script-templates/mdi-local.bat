@@ -18,8 +18,10 @@ SET HOST_DIRECTORY=__HOST_DIRECTORY__
 SET DATA_DIRECTORY=__DATA_DIRECTORY__
 SET R_DIRECTORY=__R_DIRECTORY__
 SET INSTALL_PACKAGES=__INSTALL_PACKAGES__
+SET INSTALL_N_CPU=__INSTALL_N_CPU__
 SET SHINY_PORT=__SHINY_PORT__
 SET DEVELOPER=__DEVELOPER__
+SET N_CPU=%INSTALL_N_CPU%
 
 REM -----------------------------------------------------------------------
 REM prompt the user for the requested action
@@ -33,6 +35,7 @@ ECHO   MDI_DIRECTORY    %MDI_DIRECTORY%
 ECHO   HOST_DIRECTORY   %HOST_DIRECTORY%
 ECHO   DATA_DIRECTORY   %DATA_DIRECTORY%
 ECHO   R_DIRECTORY      %R_DIRECTORY%
+ECHO   INSTALL_N_CPU    %INSTALL_N_CPU%
 ECHO   DEVELOPER        %DEVELOPER%
 ECHO.
 ECHO What would you like to do?
@@ -100,7 +103,7 @@ REM -----------------------------------------------------------------------
 REM for an installation action, be sure the MDI manager is installed and up to date
 REM -----------------------------------------------------------------------
 IF "!ACTION_NUMBER!"=="1" (
-    "%RSCRIPT%" -e "%R_LIB_PATH%; if(require('remotes', character.only = TRUE) == FALSE) install.packages('remotes', repos = 'https://cloud.r-project.org')" 
+    "%RSCRIPT%" -e "%R_LIB_PATH%; if(require('remotes', character.only = TRUE) == FALSE) install.packages('remotes', repos = 'https://cloud.r-project.org', Ncpus=%INSTALL_N_CPU%)" 
     "%RSCRIPT%" -e "%R_LIB_PATH%; remotes::install_github('MiDataInt/mdi-manager')"  
 )
 
