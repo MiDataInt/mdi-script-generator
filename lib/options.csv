@@ -3,7 +3,6 @@ MDI Directories,MDI_DIRECTORY,Installation Directory,text,FALSE,~,required,requi
 MDI Directories,HOST_DIRECTORY,Host Directory,text,FALSE,NA,optional,optional,optional,NA,TRUE
 MDI Directories,DATA_DIRECTORY,Data Directory,text,FALSE,NA,optional,optional,optional,NA,TRUE
 Installation Parameters,R_LOAD_COMMAND,R Load Command,text,FALSE,NA,NA,optional,optional,NA,NA
-Installation Parameters,R_VERSION,R Version,text,FALSE,v4.1,NA,optional,optional,NA,NA
 Installation Parameters,R_DIRECTORY,R Source Directory,text,FALSE,NA,optional,NA,NA,NA,FALSE
 Installation Parameters,INSTALL_PACKAGES,Install R Packages,checkbox,TRUE,TRUE,optional,optional,optional,NA,NA
 Server Information,SERVER_URL,Server Domain,text,FALSE,NA,NA,required,required,required,NA

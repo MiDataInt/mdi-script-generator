@@ -22,7 +22,6 @@ SET HOST_DIRECTORY=__HOST_DIRECTORY__
 SET DATA_DIRECTORY=__DATA_DIRECTORY__
 SET R_LOAD_COMMAND=__R_LOAD_COMMAND__
 SET R_LOAD_COMMAND_MASKED=__R_LOAD_COMMAND_MASKED__
-SET R_VERSION=__R_VERSION__
 SET INSTALL_PACKAGES=__INSTALL_PACKAGES__
 SET SERVER_URL=__SERVER_URL__
 SET USER=__USER__
@@ -48,7 +47,6 @@ ECHO   MDI_DIRECTORY    %MDI_DIRECTORY%
 ECHO   HOST_DIRECTORY   %HOST_DIRECTORY%
 ECHO   DATA_DIRECTORY   %DATA_DIRECTORY%
 ECHO   R_LOAD_COMMAND   %R_LOAD_COMMAND%
-ECHO   R_VERSION        %R_VERSION%
 ECHO   CLUSTER_ACCOUNT  %CLUSTER_ACCOUNT%
 ECHO   JOB_TIME_MINUTES %JOB_TIME_MINUTES%
 ECHO   CPUS_PER_TASK    %CPUS_PER_TASK%
@@ -129,7 +127,6 @@ REM -----------------------------------------------------------------------
         )
         ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% ^
         %R_LOAD_COMMAND%; ^
-        export MDI_R_VERSION=%R_VERSION%; ^
         export SUPPRESS_MDI_BASHRC=TRUE; ^
         %MDI_DIRECTORY%/mdi install !IP_FLAG! !FORKS_FLAG! ^
         echo; ^
@@ -150,7 +147,7 @@ REM -----------------------------------------------------------------------
     ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" -D %PROXY_PORT% %USER%@%SERVER_URL% ^
     bash %MDI_DIRECTORY%/remote/mdi-remote-node.sh ^
     %PROXY_PORT% %R_LOAD_COMMAND_MASKED% %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% ^
-    %CLUSTER_ACCOUNT% %JOB_TIME_MINUTES% %CPUS_PER_TASK% %MEM_PER_CPU% %R_VERSION%
+    %CLUSTER_ACCOUNT% %JOB_TIME_MINUTES% %CPUS_PER_TASK% %MEM_PER_CPU%
 
 REM -----------------------------------------------------------------------
 REM ssh into the server as per normal

@@ -1,5 +1,9 @@
 ### R Version
 
+---
+OBSOLETE: support for mdi-singularity-base has been disabled
+---
+
 As a recommended alternative to running R and the MDI server
 directly on your host computer, you can also run the MDI
 within a Singularity container.
