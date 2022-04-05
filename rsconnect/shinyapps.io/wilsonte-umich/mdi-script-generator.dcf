@@ -5,9 +5,9 @@ account: wilsonte-umich
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5333042
-bundleId: 5549812
+bundleId: 5767774
 url: https://wilsonte-umich.shinyapps.io/mdi-script-generator/
-when: 1644181071.92981
-lastSyncTime: 1644181071.93076
+when: 1649186870.36831
+lastSyncTime: 1649186870.36831
 asMultiple: FALSE
 asStatic: FALSE
