@@ -86,9 +86,12 @@ fi
 # parse the appropriate R command path
 # -----------------------------------------------------------------------
 if [ "$R_DIRECTORY" = "NULL" ]; then
-    RSCRIPT=Rscript.exe
+    RSCRIPT=Rscript
 else
-    RSCRIPT=$R_DIRECTORY/bin/Rscript.exe
+    RSCRIPT=$R_DIRECTORY/bin/Rscript
+    if [ ! -e $RSCRIPT ]; then 
+        RSCRIPT=$R_DIRECTORY/Rscript 
+    fi
 fi
 
 # -----------------------------------------------------------------------
