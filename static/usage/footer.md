@@ -5,10 +5,8 @@ All batch scripts open a command window that presents:
 - information summarizing the script targets and options
 - a menu of action options
 
-In general, you should first select an 
-option to install the MDI, then an option to run it.
-Script outputs will be logged
-in the command window until you close it.
+In general, you should first install the MDI, then run it.
+Script outputs will be logged in the command window until you close it.
 
 ### Load the MDI in your web browser
 
@@ -56,7 +54,7 @@ to use the proxy you created above.
 
 #### Batch script contents
 
-All MDI code is open source. You can preview the contents
+You can preview the contents
 of a batch script when you download it, and open the script in 
 any text editor to verify that it doesn't contain 
 unexpected code. All scripts are commented to guide you.
