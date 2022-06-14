@@ -56,8 +56,8 @@ echo "  DEVELOPER        $DEVELOPER"
 echo
 echo "What would you like to do?"
 echo
-echo "  1 - use nano to edit one of the server configuration files"
-echo "  2 - (re)install the MDI on the remote server via SSH"
+echo "  1 - (re)install the MDI on the remote server via SSH"
+echo "  2 - use nano to edit one of the server configuration files"
 echo "  3 - run the MDI web interface (local browser, server on cluster node via SSH)"
 echo "  4 - bring up an interactive bash terminal on the server"
 echo "  5 - exit and do nothing"
@@ -65,11 +65,56 @@ echo
 echo "Select an action by its number: "
 read ACTION_NUMBER
 
+# -----------------------------------------------------------------------
+# act on a requested 'install' action
+# -----------------------------------------------------------------------
+if [ "$ACTION_NUMBER" = "1" ]; then
+
+    # prompt for installation permission
+    IP_MESSAGE="-"
+    if [ "$INSTALL_PACKAGES" = "TRUE" ]; then
+        IP_MESSAGE="- install or update R packages"
+    fi
+    echo
+    echo "------------------------------------------------------------------"
+    echo "PLEASE CONFIRM MDI INSTALLATION ACTIONS"
+    echo "------------------------------------------------------------------"
+    echo
+    echo "  - create and populate directory $MDI_DIRECTORY on $SERVER_URL"    
+    echo "  - install the MDI manager repository"
+    echo "  - clone or update framework and suite repositories from GitHub"
+    echo "  - check out the most recent version of all definitive repositories"
+    echo "  $IP_MESSAGE"
+    echo
+    echo "Do you wish to continue? [type 'y' for 'yes']: "
+    read CONFIRMATION 
+
+    # ssh into server and execute the installation
+    if [ "$CONFIRMATION" = "y" ]; then
+        IP_FLAG=""
+        if [ "$INSTALL_PACKAGES" = "TRUE" ]; then 
+            IP_FLAG=--install-packages
+        fi
+        FORKS_FLAG=""
+        if [ "$DEVELOPER" = "TRUE" ]; then 
+            FORKS_FLAG=--forks
+        fi
+        ssh $IDENTITY_FILE -o "StrictHostKeyChecking no" $USER@$SERVER_URL \
+        $R_LOAD_COMMAND; \
+        export SUPPRESS_MDI_BASHRC=TRUE; \
+        if [ ! -d $MDI_DIRECTORY ]; then mkdir -p $MDI_DIRECTORY; fi; \
+        cd $MDI_DIRECTORY; \
+        if [ ! -e install.sh ]; then git clone https://github.com/MiDataInt/mdi.git .; fi; \
+        if [ ! -e mdi ]; then ./install.sh 1; fi; \
+        ./mdi install $IP_FLAG $FORKS_FLAG --n-cpu $INSTALL_N_CPU; \
+        echo; \
+        echo "Done"
+    fi
 
 # -----------------------------------------------------------------------
 # request the server file to edit
 # -----------------------------------------------------------------------
-if [ "$ACTION_NUMBER" = "1" ]; then
+elif [ "$ACTION_NUMBER" = "2" ]; then
     echo
     echo "Please select the server file you would like to edit."
     echo
@@ -93,48 +138,6 @@ if [ "$ACTION_NUMBER" = "1" ]; then
         exit
     fi
     ssh $IDENTITY_FILE -o "StrictHostKeyChecking no" $USER@$SERVER_URL -t nano $MDI_DIRECTORY/config/$FILE_NAME
-
-# -----------------------------------------------------------------------
-# act on a requested 'install' action
-# -----------------------------------------------------------------------
-elif [ "$ACTION_NUMBER" = "2" ]; then
-
-    # prompt for installation permission
-    IP_MESSAGE="-"
-    if [ "$INSTALL_PACKAGES" = "TRUE" ]; then
-        IP_MESSAGE="- install or update R packages"
-    fi
-    echo
-    echo "------------------------------------------------------------------"
-    echo "PLEASE CONFIRM MDI INSTALLATION ACTIONS"
-    echo "------------------------------------------------------------------"
-    echo
-    echo "  - install the R MDI manager package"
-    echo "  - populate $SERVER_URL directory $MDI_DIRECTORY"
-    echo "  - clone or update MDI repositories from GitHub"
-    echo "  - check out the most recent version of all definitive MDI repositories"
-    echo "  $IP_MESSAGE"
-    echo
-    echo "Do you wish to continue? [type 'y' for 'yes']: "
-    read CONFIRMATION 
-
-    # ssh into server and execute the installation
-    if [ "$CONFIRMATION" = "y" ]; then
-        IP_FLAG=""
-        if [ "$INSTALL_PACKAGES" = "TRUE" ]; then 
-            IP_FLAG=--install-packages
-        fi
-        FORKS_FLAG=""
-        if [ "$DEVELOPER" = "TRUE" ]; then 
-            FORKS_FLAG=--forks
-        fi
-        ssh $IDENTITY_FILE -o "StrictHostKeyChecking no" $USER@$SERVER_URL \
-        $R_LOAD_COMMAND; \
-        export SUPPRESS_MDI_BASHRC=TRUE; \
-        $MDI_DIRECTORY/mdi install $IP_FLAG $FORKS_FLAG --n-cpu $INSTALL_N_CPU \
-        echo; \
-        echo "Done"
-    fi
 
 # -----------------------------------------------------------------------
 # act on a requested 'run' action

@@ -46,8 +46,8 @@ ECHO   DEVELOPER        %DEVELOPER%
 ECHO.
 ECHO What would you like to do?
 ECHO.
-ECHO   1 - use nano to edit one of the server configuration files
-ECHO   2 - (re)install the MDI on the remote server via SSH
+ECHO   1 - (re)install the MDI on the remote server via SSH
+ECHO   2 - use nano to edit one of the server configuration files
 ECHO   3 - run the MDI web interface (local browser, remote server via SSH)
 ECHO   4 - bring up an interactive bash terminal on the server
 ECHO   5 - exit and do nothing
@@ -55,9 +55,56 @@ ECHO.
 SET /p ACTION_NUMBER=Select an action by its number: 
 
 REM -----------------------------------------------------------------------
-REM request the server file to edit
+REM act on a requested 'install' action
 REM -----------------------------------------------------------------------
 IF "!ACTION_NUMBER!"=="1" (
+
+    REM prompt for installation permission
+    SET IP_MESSAGE=-
+    IF %INSTALL_PACKAGES%==TRUE (
+        SET IP_MESSAGE=- install or update R packages
+    )
+    ECHO.
+    ECHO ------------------------------------------------------------------
+    ECHO PLEASE CONFIRM MDI INSTALLATION ACTIONS
+    ECHO ------------------------------------------------------------------
+    ECHO.
+    ECHO   - create and populate directory %MDI_DIRECTORY% on %SERVER_URL%
+    ECHO   - install the MDI manager repository
+    ECHO   - clone or update framework and suite repositories from GitHub
+    ECHO   - check out the most recent version of all definitive repositories
+    ECHO   !IP_MESSAGE!
+    ECHO.
+    SET /p CONFIRMATION=Do you wish to continue? [type 'y' for 'yes']: 
+
+    REM ssh into server and execute the installation
+    IF "!CONFIRMATION!"=="y" (
+        SET IP_FLAG=
+        IF %INSTALL_PACKAGES%==TRUE (
+            SET IP_FLAG=--install-packages
+        )
+        SET FORKS_FLAG=
+        IF %DEVELOPER%==TRUE (
+            SET FORKS_FLAG=--forks
+        )
+        ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% ^
+        %R_LOAD_COMMAND%; ^
+        export SUPPRESS_MDI_BASHRC=TRUE; ^
+        if [ ^^! -d %MDI_DIRECTORY% ]; then mkdir -p %MDI_DIRECTORY%; fi; ^
+        cd %MDI_DIRECTORY%; ^
+        if [ ^^! -e install.sh ]; then git clone https://github.com/MiDataInt/mdi.git .; fi; ^
+        if [ ^^! -e mdi ]; then ./install.sh 1; fi; ^
+        ./mdi install !IP_FLAG! !FORKS_FLAG! --n-cpu %INSTALL_N_CPU%; ^
+        echo; ^
+        echo "Done"
+        REM 
+        PAUSE
+    )
+
+REM -----------------------------------------------------------------------
+REM request the server file to edit
+REM -----------------------------------------------------------------------
+) ELSE IF "!ACTION_NUMBER!"=="2" (
     ECHO.
     ECHO Please select the server file you would like to edit.
     ECHO.
@@ -82,49 +129,6 @@ IF "!ACTION_NUMBER!"=="1" (
         EXIT
     )
     ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% -t nano %MDI_DIRECTORY%/config/!FILE_NAME!
-
-REM -----------------------------------------------------------------------
-REM act on a requested 'install' action
-REM -----------------------------------------------------------------------
-) ELSE IF "!ACTION_NUMBER!"=="2" (
-
-    REM prompt for installation permission
-    SET IP_MESSAGE=-
-    IF %INSTALL_PACKAGES%==TRUE (
-        SET IP_MESSAGE=- install or update R packages
-    )
-    ECHO.
-    ECHO ------------------------------------------------------------------
-    ECHO PLEASE CONFIRM MDI INSTALLATION ACTIONS
-    ECHO ------------------------------------------------------------------
-    ECHO.
-    ECHO   - install the R MDI manager package
-    ECHO   - populate %SERVER_URL% directory %MDI_DIRECTORY%
-    ECHO   - clone or update MDI repositories from GitHub
-    ECHO   - check out the most recent version of all definitive MDI repositories
-    ECHO   !IP_MESSAGE!
-    ECHO.
-    SET /p CONFIRMATION=Do you wish to continue? [type 'y' for 'yes']: 
-
-    REM ssh into server and execute the installation
-    IF "!CONFIRMATION!"=="y" (
-        SET IP_FLAG=
-        IF %INSTALL_PACKAGES%==TRUE (
-            SET IP_FLAG=--install-packages
-        )
-        SET FORKS_FLAG=
-        IF %DEVELOPER%==TRUE (
-            SET FORKS_FLAG=--forks
-        )
-        ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" %USER%@%SERVER_URL% ^
-        %R_LOAD_COMMAND%; ^
-        export SUPPRESS_MDI_BASHRC=TRUE; ^
-        %MDI_DIRECTORY%/mdi install !IP_FLAG! !FORKS_FLAG! --n-cpu %INSTALL_N_CPU% ^
-        echo; ^
-        echo "Done"
-        REM 
-        PAUSE
-    )
 
 REM -----------------------------------------------------------------------
 REM act on a requested 'run' action
