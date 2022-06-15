@@ -137,7 +137,7 @@ elif [ "$ACTION_NUMBER" = "3" ]; then
     # ssh into server, with local port forwarding
     # launch MDI web server if not already running and report it's access URL
     # await user input for how to close, including whether to leave the web server running after exit
-    ssh $IDENTITY_FILE -o "StrictHostKeyChecking no" -L $SHINY_PORT:127.0.0.1:$SHINY_PORT $USER@$SERVER_URL \
+    ssh -t $IDENTITY_FILE -o "StrictHostKeyChecking no" -L $SHINY_PORT:127.0.0.1:$SHINY_PORT $USER@$SERVER_URL \
     bash $MDI_DIRECTORY/remote/mdi-remote-server.sh \
     $SHINY_PORT $MDI_DIRECTORY $DATA_DIRECTORY $HOST_DIRECTORY $DEVELOPER $R_LOAD_COMMAND_MASKED
 

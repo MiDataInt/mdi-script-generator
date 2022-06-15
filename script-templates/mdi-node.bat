@@ -150,7 +150,7 @@ REM -----------------------------------------------------------------------
     REM ssh into server, with dynamic port forwarding (SOCKS5)
     REM launch MDI web server job if one is not already running and report it's access URL
     REM await user input for how to close, including whether or not to leave the web server running after exit
-    ssh !IDENTITY_FILE! -o "StrictHostKeyChecking no" -D %PROXY_PORT% %USER%@%SERVER_URL% ^
+    ssh -t !IDENTITY_FILE! -o "StrictHostKeyChecking no" -D %PROXY_PORT% %USER%@%SERVER_URL% ^
     bash %MDI_DIRECTORY%/remote/mdi-remote-node.sh ^
     %PROXY_PORT% %R_LOAD_COMMAND_MASKED% %SHINY_PORT% %MDI_DIRECTORY% %DATA_DIRECTORY% %HOST_DIRECTORY% %DEVELOPER% ^
     %CLUSTER_ACCOUNT% %JOB_TIME_MINUTES% %CPUS_PER_TASK% %MEM_PER_CPU%
