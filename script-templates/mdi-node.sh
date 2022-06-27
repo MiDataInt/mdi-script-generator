@@ -151,7 +151,7 @@ elif [ "$ACTION_NUMBER" = "3" ]; then
     ssh -t $IDENTITY_FILE -o "StrictHostKeyChecking no" -D $PROXY_PORT $USER@$SERVER_URL \
     bash $MDI_DIRECTORY/remote/mdi-remote-node.sh \
     $PROXY_PORT $R_LOAD_COMMAND_MASKED $SHINY_PORT $MDI_DIRECTORY $DATA_DIRECTORY $HOST_DIRECTORY $DEVELOPER \
-    $CLUSTER_ACCOUNT $JOB_TIME_MINUTES $CPUS_PER_TASK $MEM_PER_CPU
+    $CLUSTER_ACCOUNT $JOB_TIME_MINUTES $CPUS_PER_TASK $MEM_PER_CPU $SERVER_URL
 
 # -----------------------------------------------------------------------
 # ssh into the server as per normal
