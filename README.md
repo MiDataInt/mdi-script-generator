@@ -1,3 +1,18 @@
+# OBSOLETE
+
+The mdi-script-generator is **largely obsolete as of August 2022**.
+It has essentially been replaced by the MDI Desktop App pending
+code signing.
+
+- <https://github.com/MiDataInt/mdi-desktop-app>
+
+The concepts behind the script generator and desktop app are
+essentially the same - to create a convenience wrapper for users
+to make calls to named MDI installations. The difference is
+that the desktop app provides that wrapper access all within
+a single, installable app, instead of a user having to download
+and maintain potentially multiple unsignable batch scripts.
+
 # mdi-script-generator
 
 This repository carries the code that runs the MDI public script generator
